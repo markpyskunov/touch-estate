@@ -29,71 +29,69 @@
         borderBottomRightRadius: '8px'
       }"
     >
-      <div class="d-flex flex-column">
-        <!-- Price and Address -->
-        <div class="d-flex flex-column mb-4">
-          <div class="text-h4 text-primary font-weight-medium">${{ listing.price }}</div>
-          <div class="text-h6 mt-2">{{ listing.address }}</div>
-          <div class="text-body-2 text-grey">{{ listing.city }}, {{ listing.province }} {{ listing.postalCode }}</div>
+      <!-- Property Stats -->
+      <div class="d-flex justify-space-between mb-4">
+        <div class="text-center">
+          <v-icon size="28">mdi-bed</v-icon>
+          <div class="text-subtitle-1 font-weight-medium">{{ listing.bedrooms }}</div>
+          <div class="text-caption text-grey">Bedrooms</div>
         </div>
+        <div class="text-center">
+          <v-icon size="28">mdi-shower</v-icon>
+          <div class="text-subtitle-1 font-weight-medium">{{ listing.bathrooms }}</div>
+          <div class="text-caption text-grey">Bathrooms</div>
+        </div>
+        <div class="text-center">
+          <v-icon size="28">mdi-ruler-square</v-icon>
+          <div class="text-subtitle-1 font-weight-medium">{{ listing.area }}</div>
+          <div class="text-caption text-grey">Sq Ft</div>
+        </div>
+        <div class="text-center">
+          <v-tooltip text="2 Garage + 1 Parking" location="top">
+            <template v-slot:activator="{ props }">
+              <div v-bind="props">
+                <v-icon size="28">mdi-garage</v-icon>
+                <div class="text-subtitle-1 font-weight-medium">2+1</div>
+                <div class="text-caption text-grey">Parking</div>
+              </div>
+            </template>
+          </v-tooltip>
+        </div>
+      </div>
 
-        <!-- MLS Number -->
-        <div class="d-flex align-center mb-4">
+      <!-- Price and Favorite -->
+      <div class="d-flex justify-space-between align-center mb-4">
+        <div class="text-h3 text-primary font-weight-medium">${{ listing.price }}</div>
+        <v-btn
+          icon
+          size="large"
+          color="error"
+          variant="text"
+        >
+          <v-icon>mdi-heart-outline</v-icon>
+        </v-btn>
+      </div>
+
+      <!-- Address Info -->
+      <div class="mb-4">
+        <div class="text-h6">{{ listing.address }}</div>
+        <div class="text-subtitle-1 text-grey">{{ listing.city }}, {{ listing.province }} {{ listing.postalCode }}</div>
+        <div class="d-flex align-center mt-2">
           <span class="text-grey me-2">MLS® Number:</span>
           <span>{{ listing.mlsNumber }}</span>
         </div>
-
-        <!-- Property Stats -->
-        <div class="d-flex justify-space-between mb-4">
-          <div class="text-center">
-            <v-icon size="24">mdi-bed</v-icon>
-            <div class="text-subtitle-1 font-weight-medium">{{ listing.bedrooms }}</div>
-            <div class="text-caption text-grey">Bedrooms</div>
-          </div>
-          <div class="text-center">
-            <v-icon size="24">mdi-shower</v-icon>
-            <div class="text-subtitle-1 font-weight-medium">{{ listing.bathrooms }}</div>
-            <div class="text-caption text-grey">Bathrooms</div>
-          </div>
-          <div class="text-center">
-            <v-icon size="24">mdi-ruler-square</v-icon>
-            <div class="text-subtitle-1 font-weight-medium">{{ listing.area }}</div>
-            <div class="text-caption text-grey">Sq Ft</div>
-          </div>
-          <div class="text-center">
-            <v-tooltip text="2 Garage + 1 Parking" location="top">
-              <template v-slot:activator="{ props }">
-                <div v-bind="props">
-                  <v-icon size="24">mdi-garage</v-icon>
-                  <div class="text-subtitle-1 font-weight-medium">2+1</div>
-                  <div class="text-caption text-grey">Parking</div>
-                </div>
-              </template>
-            </v-tooltip>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="d-flex justify-space-between">
-          <v-btn
-            color="primary"
-            variant="text"
-            class="px-0"
-            prepend-icon="mdi-calculator"
-          >
-            Get Qualified
-          </v-btn>
-          <v-btn
-            variant="outlined"
-            density="comfortable"
-            class="text-none"
-            color="error"
-            prepend-icon="mdi-heart-outline"
-          >
-            Favourite
-          </v-btn>
-        </div>
       </div>
+
+      <!-- Get Qualified Button -->
+      <v-btn
+        color="primary"
+        block
+        class="text-none"
+        prepend-icon="mdi-calculator"
+      >
+        Get Qualified for Mortgage
+        <v-icon size="small" class="ms-1">mdi-information</v-icon>
+      </v-btn>
     </v-card>
 
     <!-- Main Content Section -->
