@@ -84,14 +84,71 @@
 
       <!-- Get Qualified Button -->
       <v-btn
-        color="primary"
+        variant="text"
         block
         class="text-none"
         prepend-icon="mdi-calculator"
+        color="primary"
       >
         Get Qualified for Mortgage
         <v-icon size="small" class="ms-1">mdi-information</v-icon>
       </v-btn>
+    </v-card>
+
+    <!-- Agent Info and Subscribe Section -->
+    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
+      <v-card-text class="pt-4">
+        <!-- Agent Info -->
+        <div class="d-flex align-center mb-6">
+          <v-avatar size="60" class="me-4">
+            <v-img src="https://placehold.co/200x200/333/fff?text=Agent" />
+          </v-avatar>
+          <div>
+            <div class="text-h6">John Smith</div>
+            <div class="text-subtitle-2 text-grey">Real Estate Agent</div>
+            <div class="mt-2">
+              <div class="d-flex align-center mb-1">
+                <v-icon size="small" class="me-2">mdi-email</v-icon>
+                <a href="mailto:john.smith@realestate.com" class="text-decoration-none">john.smith@realestate.com</a>
+              </div>
+              <div class="d-flex align-center">
+                <v-icon size="small" class="me-2">mdi-phone</v-icon>
+                <a href="tel:+12505550123" class="text-decoration-none">+1 (250) 555-0123</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <v-divider class="mb-6"></v-divider>
+
+        <!-- Subscribe Form -->
+        <div class="text-h6 mb-4">Track This Property</div>
+        <p class="text-body-2 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
+
+        <v-form @submit.prevent="subscribeToProperty">
+          <v-textarea
+            v-model="subscribeForm.personalNote"
+            label="Add New Note"
+            placeholder="Add a note about this property..."
+            variant="outlined"
+            density="compact"
+            rows="2"
+            class="mb-4"
+            hide-details
+          ></v-textarea>
+
+          <v-btn
+            color="primary"
+            type="submit"
+            block
+            size="large"
+            class="text-none"
+            elevation="2"
+          >
+            Subscribe to Updates
+          </v-btn>
+        </v-form>
+      </v-card-text>
     </v-card>
 
     <!-- Main Content Section -->
@@ -117,6 +174,50 @@
             {{ feature }}
           </v-chip>
         </div>
+      </v-card-text>
+    </v-card>
+
+    <!-- Notes Section -->
+    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
+      <v-card-text>
+        <!-- Previous Notes -->
+        <div v-if="previousNotes.length > 0" class="mb-6">
+          <div class="text-h6 mb-3">Your Notes</div>
+          <v-timeline density="compact" align="start">
+            <v-timeline-item
+              v-for="note in previousNotes"
+              :key="note.id"
+              dot-color="primary"
+              size="small"
+            >
+              <div class="text-caption text-grey mb-1">{{ formatDate(note.timestamp) }}</div>
+              <div class="text-body-2">{{ note.content }}</div>
+            </v-timeline-item>
+          </v-timeline>
+        </div>
+
+        <!-- Add Note Form -->
+        <div class="text-h6 mb-4">Add Note</div>
+        <v-form @submit.prevent="addNote">
+          <v-textarea
+            v-model="noteForm.content"
+            placeholder="Add a note about this property..."
+            variant="outlined"
+            density="comfortable"
+            rows="3"
+            class="mb-4"
+            hide-details
+          ></v-textarea>
+
+          <v-btn
+            color="primary"
+            type="submit"
+            block
+            class="text-none"
+          >
+            Save Note
+          </v-btn>
+        </v-form>
       </v-card-text>
     </v-card>
 
@@ -167,95 +268,88 @@
         <v-table density="comfortable">
           <thead>
             <tr>
-              <th class="text-left">Level</th>
+              <th class="text-left" style="width: 48px">Level</th>
               <th class="text-left">Room</th>
-              <th class="text-left">Dimensions</th>
+              <th class="text-left" style="width: 96px">Dimensions</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="room in rooms" :key="room.id">
               <td>
-                <div class="d-flex align-center">
-                  <v-icon size="20" class="me-2">{{ getLevelIcon(room.level) }}</v-icon>
-                  {{ room.level }}
-                </div>
+                <v-icon size="20" :title="room.level">{{ getLevelIcon(room.level) }}</v-icon>
               </td>
-              <td>{{ room.name }}</td>
-              <td>{{ formatDimensions(room.dimensions) }}</td>
+              <td>
+                <v-tooltip :text="room.name" location="top">
+                  <template v-slot:activator="{ props }">
+                    <div 
+                      v-bind="props" 
+                      class="text-truncate"
+                      style="max-width: 150px"
+                    >
+                      {{ room.name }}
+                    </div>
+                  </template>
+                </v-tooltip>
+              </td>
+              <td class="text-no-wrap">{{ formatDimensions(room.dimensions) }}</td>
             </tr>
           </tbody>
         </v-table>
       </v-card-text>
     </v-card>
 
-    <!-- Agent Info Card -->
+    <!-- Documents Section -->
     <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
-      <v-card-text class="pt-4">
-        <!-- Agent Info -->
-        <div class="d-flex align-center mb-6">
-          <v-avatar size="60" class="me-4">
-            <v-img src="https://placehold.co/200x200/333/fff?text=Agent" />
-          </v-avatar>
-          <div>
-            <div class="text-h6">John Smith</div>
-            <div class="text-subtitle-2 text-grey">Real Estate Agent</div>
-            <div class="mt-2">
-              <div class="d-flex align-center mb-1">
-                <v-icon size="small" class="me-2">mdi-email</v-icon>
-                <a href="mailto:john.smith@realestate.com" class="text-decoration-none">john.smith@realestate.com</a>
-              </div>
-              <div class="d-flex align-center">
-                <v-icon size="small" class="me-2">mdi-phone</v-icon>
-                <a href="tel:+12505550123" class="text-decoration-none">+1 (250) 555-0123</a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <v-card-title class="d-flex justify-space-between align-center pa-4">
+        Documents
+        <v-chip
+          color="primary"
+          variant="outlined"
+          size="small"
+          class="font-weight-regular"
+        >
+          {{ documents.length }} files
+        </v-chip>
+      </v-card-title>
 
-        <v-divider class="mb-6"></v-divider>
-
-        <!-- Subscribe Form -->
-        <div class="text-h6 mb-4">Track This Property</div>
-        <p class="text-body-2 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
-
-        <v-form @submit.prevent="subscribeToProperty">
-          <v-textarea
-            v-model="subscribeForm.personalNote"
-            label="Add New Note"
-            placeholder="Add a note about this property..."
-            variant="outlined"
-            density="compact"
-            rows="2"
-            class="mb-4"
-            hide-details
-          ></v-textarea>
-
-          <v-btn
-            color="primary"
-            type="submit"
-            block
-            size="large"
-            class="mb-6"
+      <v-card-text>
+        <v-list density="compact">
+          <v-list-item
+            v-for="doc in documents"
+            :key="doc.id"
+            :href="doc.url"
+            target="_blank"
+            class="px-2"
           >
-            Subscribe to Updates
-          </v-btn>
-        </v-form>
+            <template v-slot:prepend>
+              <v-icon :color="doc.iconColor" size="20" class="me-2">{{ doc.icon }}</v-icon>
+            </template>
+
+            <v-list-item-title class="text-body-2">{{ doc.name }}</v-list-item-title>
+
+            <template v-slot:append>
+              <v-chip
+                size="x-small"
+                color="grey"
+                variant="flat"
+                class="font-weight-regular text-caption"
+              >
+                {{ doc.size }}
+              </v-chip>
+            </template>
+          </v-list-item>
+        </v-list>
       </v-card-text>
     </v-card>
 
     <!-- Map Section -->
-    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
-      <v-card-title class="text-h5">Location</v-card-title>
-      <v-card-text>
-        <div class="map-container" style="height: 300px;">
-          <v-img
-            :src="listing.mapImage"
-            height="300"
-            cover
-          ></v-img>
-        </div>
-      </v-card-text>
-    </v-card>
+    <div class="mx-n4">
+      <v-img
+        :src="listing.mapImage"
+        height="300"
+        cover
+      ></v-img>
+    </div>
   </v-container>
 </template>
 
@@ -404,6 +498,93 @@ const getLevelIcon = (level: string): string => {
       return 'mdi-home-floor-1'
   }
 }
+
+interface Note {
+  id: number
+  content: string
+  timestamp: Date
+}
+
+const noteForm = ref({
+  content: ''
+})
+
+const previousNotes = ref<Note[]>([
+  {
+    id: 1,
+    content: "Great location, close to schools and parks. Need to check the garage size.",
+    timestamp: new Date('2024-03-15T14:30:00')
+  },
+  {
+    id: 2,
+    content: "Called agent about the roof age - was replaced in 2020.",
+    timestamp: new Date('2024-03-16T09:15:00')
+  }
+])
+
+const formatDate = (date: Date): string => {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric'
+  }).format(date)
+}
+
+const addNote = () => {
+  if (noteForm.value.content.trim()) {
+    previousNotes.value.unshift({
+      id: Date.now(),
+      content: noteForm.value.content,
+      timestamp: new Date()
+    })
+    noteForm.value.content = ''
+  }
+}
+
+interface Document {
+  id: number
+  name: string
+  url: string
+  size: string
+  icon: string
+  iconColor: string
+}
+
+const documents = ref<Document[]>([
+  {
+    id: 1,
+    name: 'Property Disclosure Statement.pdf',
+    url: '#',
+    size: '2.4 MB',
+    icon: 'mdi-file-document-outline',
+    iconColor: 'primary'
+  },
+  {
+    id: 2,
+    name: 'Floor Plans.pdf',
+    url: '#',
+    size: '5.1 MB',
+    icon: 'mdi-floor-plan',
+    iconColor: 'success'
+  },
+  {
+    id: 3,
+    name: 'Property Survey.pdf',
+    url: '#',
+    size: '3.8 MB',
+    icon: 'mdi-map-outline',
+    iconColor: 'info'
+  },
+  {
+    id: 4,
+    name: 'Title Certificate.pdf',
+    url: '#',
+    size: '1.2 MB',
+    icon: 'mdi-certificate-outline',
+    iconColor: 'warning'
+  }
+])
 </script>
 
 <style scoped>
@@ -414,5 +595,15 @@ const getLevelIcon = (level: string): string => {
 
 .mt-n8 {
   margin-top: -32px;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-no-wrap {
+  white-space: nowrap;
 }
 </style> 
