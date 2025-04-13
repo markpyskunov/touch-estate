@@ -364,6 +364,124 @@
       </v-card-text>
     </v-card>
 
+    <!-- Mortgage Calculator -->
+    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
+      <v-card-title class="d-flex justify-space-between align-center pa-4">
+        Mortgage Calculator
+        <v-chip
+          color="primary"
+          variant="outlined"
+          size="small"
+          class="font-weight-regular"
+        >
+          Rate: {{ calculatorSettings.interestRate.toFixed(2) }}%
+        </v-chip>
+      </v-card-title>
+
+      <v-card-text>
+        <!-- Down Payment Slider -->
+        <div class="mb-6">
+          <div class="d-flex justify-space-between align-center mb-2">
+            <span class="text-subtitle-2">Down Payment</span>
+            <span class="text-subtitle-2">${{ formatPrice(calculateDownPayment()) }}</span>
+          </div>
+          <v-slider
+            v-model="calculatorSettings.downPaymentPercent"
+            :min="5"
+            :max="20"
+            :step="5"
+            show-ticks
+            :ticks="[5, 10, 15, 20]"
+            thumb-label
+          >
+            <template v-slot:append>
+              <span class="text-body-2">{{ calculatorSettings.downPaymentPercent }}%</span>
+            </template>
+          </v-slider>
+        </div>
+
+        <!-- Interest Rate Slider -->
+        <div class="mb-6">
+          <div class="d-flex justify-space-between align-center mb-2">
+            <span class="text-subtitle-2">Interest Rate</span>
+            <span class="text-subtitle-2">{{ calculatorSettings.interestRate.toFixed(2) }}%</span>
+          </div>
+          <v-slider
+            v-model="calculatorSettings.interestRate"
+            :min="1"
+            :max="10"
+            :step="0.25"
+            show-ticks
+            :ticks="[2, 4, 6, 8]"
+            thumb-label
+          >
+            <template v-slot:append>
+              <span class="text-body-2">{{ calculatorSettings.interestRate.toFixed(2) }}%</span>
+            </template>
+          </v-slider>
+        </div>
+
+        <!-- Results -->
+        <div class="bg-grey-lighten-4 rounded mb-4">
+          <!-- Loan Amount -->
+          <div class="d-flex align-center px-4 py-3">
+            <div class="d-flex align-center">
+              <v-icon color="primary" size="small" class="me-3">mdi-bank</v-icon>
+              <span>Loan Amount</span>
+            </div>
+            <v-spacer></v-spacer>
+            <span>${{ formatPrice(calculateLoanAmount()) }}</span>
+          </div>
+
+          <!-- Monthly Payment -->
+          <div class="d-flex align-center px-4 py-3">
+            <div class="d-flex align-center">
+              <v-icon color="primary" size="small" class="me-3">mdi-calendar-month</v-icon>
+              <span>Monthly Payment</span>
+            </div>
+            <v-spacer></v-spacer>
+            <span class="text-primary font-weight-bold">${{ formatPrice(calculateMonthlyPayment()) }}</span>
+          </div>
+
+          <!-- Property Tax -->
+          <div class="d-flex align-center px-4 py-3">
+            <div class="d-flex align-center">
+              <v-icon color="primary" size="small" class="me-3">mdi-home-city</v-icon>
+              <span>Property Tax</span>
+            </div>
+            <v-spacer></v-spacer>
+            <span>$450/month</span>
+          </div>
+
+          <!-- Maintenance -->
+          <div class="d-flex align-center px-4 py-3">
+            <div class="d-flex align-center">
+              <v-icon color="primary" size="small" class="me-3">mdi-hammer-wrench</v-icon>
+              <span>Maintenance</span>
+            </div>
+            <v-spacer></v-spacer>
+            <span>$350/month</span>
+          </div>
+
+          <v-divider></v-divider>
+
+          <!-- Total Monthly -->
+          <div class="d-flex align-center px-4 py-3">
+            <div class="d-flex align-center">
+              <v-icon color="primary" size="small" class="me-3">mdi-cash-multiple</v-icon>
+              <span class="font-weight-medium">Total Monthly</span>
+            </div>
+            <v-spacer></v-spacer>
+            <span class="text-primary font-weight-bold">${{ formatPrice(calculateTotalMonthly()) }}</span>
+          </div>
+        </div>
+
+        <div class="text-caption text-grey">
+          * Based on {{ calculatorSettings.amortizationYears }} year amortization
+        </div>
+      </v-card-text>
+    </v-card>
+
     <!-- Map Section -->
     <div class="mx-n4">
       <v-img
@@ -612,6 +730,39 @@ const showSubscribeDialog = ref(false)
 
 const openSubscribeDialog = () => {
   showSubscribeDialog.value = true
+}
+
+const calculatorSettings = ref({
+  downPaymentPercent: 10,
+  interestRate: 4.00,
+  amortizationYears: 25
+})
+
+const formatPrice = (value: number): string => {
+  return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+const calculateDownPayment = (): number => {
+  const price = parseFloat(listing.value.price.replace(/,/g, ''))
+  return price * (calculatorSettings.value.downPaymentPercent / 100)
+}
+
+const calculateLoanAmount = (): number => {
+  const price = parseFloat(listing.value.price.replace(/,/g, ''))
+  return price - calculateDownPayment()
+}
+
+const calculateMonthlyPayment = (): number => {
+  const loanAmount = calculateLoanAmount()
+  const monthlyRate = calculatorSettings.value.interestRate / 100 / 12
+  const numberOfPayments = calculatorSettings.value.amortizationYears * 12
+  
+  return (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
+         (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
+}
+
+const calculateTotalMonthly = (): number => {
+  return calculateMonthlyPayment() + 450 + 350 // Adding property tax and maintenance
 }
 </script>
 
