@@ -82,7 +82,19 @@
         </div>
       </div>
 
-      <!-- Get Qualified Button -->
+      <!-- Primary CTA -->
+      <v-btn
+        color="primary"
+        block
+        size="large"
+        class="text-none mb-3"
+        elevation="2"
+        @click="openSubscribeDialog"
+      >
+        Subscribe to Updates
+      </v-btn>
+
+      <!-- Secondary CTA -->
       <v-btn
         variant="text"
         block
@@ -95,11 +107,11 @@
       </v-btn>
     </v-card>
 
-    <!-- Agent Info and Subscribe Section -->
+    <!-- Agent Info Section -->
     <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
       <v-card-text class="pt-4">
         <!-- Agent Info -->
-        <div class="d-flex align-center mb-6">
+        <div class="d-flex align-center">
           <v-avatar size="60" class="me-4">
             <v-img src="https://placehold.co/200x200/333/fff?text=Agent" />
           </v-avatar>
@@ -118,38 +130,48 @@
             </div>
           </div>
         </div>
-
-        <v-divider class="mb-6"></v-divider>
-
-        <!-- Subscribe Form -->
-        <div class="text-h6 mb-4">Track This Property</div>
-        <p class="text-body-2 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
-
-        <v-form @submit.prevent="subscribeToProperty">
-          <v-textarea
-            v-model="subscribeForm.personalNote"
-            label="Add New Note"
-            placeholder="Add a note about this property..."
-            variant="outlined"
-            density="compact"
-            rows="2"
-            class="mb-4"
-            hide-details
-          ></v-textarea>
-
-          <v-btn
-            color="primary"
-            type="submit"
-            block
-            size="large"
-            class="text-none"
-            elevation="2"
-          >
-            Subscribe to Updates
-          </v-btn>
-        </v-form>
       </v-card-text>
     </v-card>
+
+    <!-- Subscribe Dialog -->
+    <v-dialog v-model="showSubscribeDialog" width="100%" fullscreen>
+      <v-card>
+        <v-toolbar color="primary">
+          <v-btn icon @click="showSubscribeDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Subscribe to Updates</v-toolbar-title>
+        </v-toolbar>
+
+        <v-card-text class="pa-4">
+          <p class="text-body-1 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
+
+          <v-form @submit.prevent="subscribeToProperty">
+            <v-textarea
+              v-model="subscribeForm.personalNote"
+              label="Add New Note"
+              placeholder="Add a note about this property..."
+              variant="outlined"
+              density="comfortable"
+              rows="3"
+              class="mb-4"
+              hide-details
+            ></v-textarea>
+
+            <v-btn
+              color="primary"
+              type="submit"
+              block
+              size="large"
+              class="text-none"
+              elevation="2"
+            >
+              Subscribe to Updates
+            </v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 
     <!-- Main Content Section -->
     <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
@@ -585,6 +607,12 @@ const documents = ref<Document[]>([
     iconColor: 'warning'
   }
 ])
+
+const showSubscribeDialog = ref(false)
+
+const openSubscribeDialog = () => {
+  showSubscribeDialog.value = true
+}
 </script>
 
 <style scoped>
