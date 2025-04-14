@@ -512,11 +512,12 @@ const listing = ref({
   city: 'Langford',
   province: 'British Columbia',
   postalCode: 'V9B 0A1',
-  mainImage: 'https://placehold.co/1200x500/333/fff?text=Property+Main+Image',
+  mainImage: '/images/properties/exterior-front.jpg',
   images: [
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+1' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+2' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+3' },
+    { url: '/images/properties/living-room-1.jpg' },
+    { url: '/images/properties/kitchen-1.jpg' },
+    { url: '/images/properties/bedroom-1.jpg' },
+    { url: '/images/properties/bathroom.jpg' }
   ],
   additionalImages: [
     { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+4' },
@@ -550,43 +551,23 @@ const subscribeForm = ref({
 const allImages = ref([
   {
     url: '/images/properties/exterior-front.jpg',
-    alt: 'Property Exterior Front View'
-  },
-  {
-    url: '/images/properties/exterior-side.jpg',
-    alt: 'Property Exterior Side View'
-  },
-  {
-    url: '/images/properties/exterior-back.jpg',
-    alt: 'Property Exterior Back View'
+    title: 'Front View'
   },
   {
     url: '/images/properties/living-room-1.jpg',
-    alt: 'Living Room View 1'
-  },
-  {
-    url: '/images/properties/living-room-2.jpg',
-    alt: 'Living Room View 2'
+    title: 'Living Room'
   },
   {
     url: '/images/properties/kitchen-1.jpg',
-    alt: 'Kitchen View 1'
-  },
-  {
-    url: '/images/properties/kitchen-2.jpg',
-    alt: 'Kitchen View 2'
+    title: 'Kitchen'
   },
   {
     url: '/images/properties/bedroom-1.jpg',
-    alt: 'Bedroom View 1'
-  },
-  {
-    url: '/images/properties/bedroom-2.jpg',
-    alt: 'Bedroom View 2'
+    title: 'Bedroom'
   },
   {
     url: '/images/properties/bathroom.jpg',
-    alt: 'Bathroom View'
+    title: 'Bathroom'
   }
 ])
 

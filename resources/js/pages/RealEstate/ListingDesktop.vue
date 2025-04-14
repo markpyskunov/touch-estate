@@ -643,11 +643,12 @@ const listing = ref({
     { url: '/images/properties/living-room-1.jpg' },
     { url: '/images/properties/kitchen-1.jpg' },
     { url: '/images/properties/bedroom-1.jpg' },
+    { url: '/images/properties/bathroom.jpg' }
   ],
   additionalImages: [
-    { url: '/images/properties/living-room-2.jpg' },
-    { url: '/images/properties/kitchen-2.jpg' },
-    { url: '/images/properties/bathroom.jpg' },
+    { url: '/images/properties/living-room-2.jpg', title: 'Living Room' },
+    { url: '/images/properties/kitchen-2.jpg', title: 'Kitchen' },
+    { url: '/images/properties/bedroom-2.jpg', title: 'Bedroom' },
   ],
   description: 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
   features: [
@@ -673,40 +674,24 @@ const subscribeForm = ref<SubscribeForm>({
 // Combine all images for the carousel
 const allImages = ref([
   {
-    url: '/images/properties/exterior-side.jpg',
-    alt: 'Property Exterior Side View'
-  },
-  {
-    url: '/images/properties/exterior-back.jpg',
-    alt: 'Property Exterior Back View'
+    url: '/images/properties/bathroom.jpg',
+    title: 'Front View'
   },
   {
     url: '/images/properties/living-room-1.jpg',
-    alt: 'Living Room View 1'
-  },
-  {
-    url: '/images/properties/living-room-2.jpg',
-    alt: 'Living Room View 2'
+    title: 'Living Room'
   },
   {
     url: '/images/properties/kitchen-1.jpg',
-    alt: 'Kitchen View 1'
-  },
-  {
-    url: '/images/properties/kitchen-2.jpg',
-    alt: 'Kitchen View 2'
+    title: 'Kitchen'
   },
   {
     url: '/images/properties/bedroom-1.jpg',
-    alt: 'Bedroom View 1'
-  },
-  {
-    url: '/images/properties/bedroom-2.jpg',
-    alt: 'Bedroom View 2'
+    title: 'Bedroom'
   },
   {
     url: '/images/properties/bathroom.jpg',
-    alt: 'Bathroom View'
+    title: 'Bathroom'
   }
 ])
 
