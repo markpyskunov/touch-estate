@@ -166,6 +166,15 @@ const fetchData = async () => {
   if (!campaignId || !propertyId) return
 
   try {
+    // Check if visit is already verified
+    if (visitStore.isCampaignVerified(campaignId)) {
+      router.push({
+        path: `/real-estate/property/${propertyId}`,
+        query: { campaign: campaignId }
+      })
+      return
+    }
+
     // Here you would fetch both campaign and property from your API
     // For now, using mock data
     campaign.value = {
