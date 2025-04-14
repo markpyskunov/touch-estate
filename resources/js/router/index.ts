@@ -5,6 +5,8 @@ import About from '@/pages/About.vue'
 import NotFound from '@/pages/NotFound.vue'
 import Listing from '@/pages/RealEstate/Listing.vue'
 import LandingPageLayout from "@/layouts/LandingPageLayout.vue";
+import VisitGuard from "@/pages/RealEstate/VisitGuard.vue";
+import VisitVerification from "@/pages/RealEstate/VisitVerification.vue";
 
 console.log('Router module loaded') // Debug point 1
 
@@ -37,11 +39,21 @@ const routes = [
     ]
   },
     {
-        path: '/',
+        path: '/real-estate',
         component: LandingPageLayout,
         children: [
             {
-                path: 'listing/:id',
+                path: 'visit',
+                name: 'real-estate.visit',
+                component: VisitGuard,
+            },
+            {
+                path: 'verify',
+                name: 'real-estate.verify',
+                component: VisitVerification,
+            },
+            {
+                path: 'property/:id',
                 name: 'listing',
                 component: Listing,
                 props: true
@@ -60,24 +72,9 @@ const router = createRouter({
   routes
 })
 
-console.log('Router created with routes:', routes) // Debug point 2
-
 // Add navigation guard for debugging
 router.beforeEach((to, from, next) => {
-  console.log('Navigation guard triggered:', {
-    to: to.path,
-    from: from.path,
-    matched: to.matched.map(route => route.path)
-  })
   next()
-})
-
-// Add afterEach hook for debugging
-router.afterEach((to, from) => {
-  console.log('Navigation completed:', {
-    to: to.path,
-    from: from.path
-  })
 })
 
 export default router
