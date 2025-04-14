@@ -303,8 +303,8 @@
               <td>
                 <v-tooltip :text="room.name" location="top">
                   <template v-slot:activator="{ props }">
-                    <div 
-                      v-bind="props" 
+                    <div
+                      v-bind="props"
                       class="text-truncate"
                       style="max-width: 150px"
                     >
@@ -484,18 +484,20 @@
 
     <!-- Map Section -->
     <div class="mx-n4">
-      <v-img
-        :src="listing.mapImage"
-        height="300"
-        cover
-      ></v-img>
+      <v-card class="map-card">
+        <InteractiveMap
+          :center="coordinates"
+          :zoom="15"
+        />
+      </v-card>
     </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import InteractiveMap from '@/components/InteractiveMap.vue'
 
 // Reuse the same interfaces and data from Listing.vue
 const route = useRoute()
@@ -506,10 +508,10 @@ const currentImageIndex = ref(0)
 const listing = ref({
   title: 'Main information',
   price: '1,225,000',
-  address: '271 Cadillac Ave',
-  city: 'Saanich',
+  address: '1110 Samar Cres',
+  city: 'Langford',
   province: 'British Columbia',
-  postalCode: 'V8Z1T8',
+  postalCode: 'V9B 0A1',
   mainImage: 'https://placehold.co/1200x500/333/fff?text=Property+Main+Image',
   images: [
     { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+1' },
@@ -522,7 +524,7 @@ const listing = ref({
     { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+6' },
     { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+7' },
   ],
-  description: 'Beautiful family home in the desirable Tillicum area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
+  description: 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
   features: [
     'Modern Kitchen',
     'Hardwood Floors',
@@ -533,7 +535,7 @@ const listing = ref({
     'Walk-in Closets',
     'Energy Efficient',
   ],
-  mapImage: 'https://placehold.co/1200x400/333/fff?text=Property+Location+Map',
+  mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=1110+Samar+Cres,Langford,BC&zoom=15&size=600x300&markers=color:red%7C1110+Samar+Cres,Langford,BC&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`,
   bedrooms: 4,
   bathrooms: 3,
   area: 2500,
@@ -545,10 +547,47 @@ const subscribeForm = ref({
 })
 
 // Combine all images for the carousel
-const allImages = computed(() => [
-  { url: listing.value.mainImage },
-  ...listing.value.images,
-  ...listing.value.additionalImages
+const allImages = ref([
+  {
+    url: '/images/properties/exterior-front.jpg',
+    alt: 'Property Exterior Front View'
+  },
+  {
+    url: '/images/properties/exterior-side.jpg',
+    alt: 'Property Exterior Side View'
+  },
+  {
+    url: '/images/properties/exterior-back.jpg',
+    alt: 'Property Exterior Back View'
+  },
+  {
+    url: '/images/properties/living-room-1.jpg',
+    alt: 'Living Room View 1'
+  },
+  {
+    url: '/images/properties/living-room-2.jpg',
+    alt: 'Living Room View 2'
+  },
+  {
+    url: '/images/properties/kitchen-1.jpg',
+    alt: 'Kitchen View 1'
+  },
+  {
+    url: '/images/properties/kitchen-2.jpg',
+    alt: 'Kitchen View 2'
+  },
+  {
+    url: '/images/properties/bedroom-1.jpg',
+    alt: 'Bedroom View 1'
+  },
+  {
+    url: '/images/properties/bedroom-2.jpg',
+    alt: 'Bedroom View 2'
+  },
+  {
+    url: '/images/properties/bathroom.jpg',
+    alt: 'Bathroom View'
+  }
 ])
 
 const subscribeToProperty = () => {
@@ -756,7 +795,7 @@ const calculateMonthlyPayment = (): number => {
   const loanAmount = calculateLoanAmount()
   const monthlyRate = calculatorSettings.value.interestRate / 100 / 12
   const numberOfPayments = calculatorSettings.value.amortizationYears * 12
-  
+
   return (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
          (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
 }
@@ -764,6 +803,9 @@ const calculateMonthlyPayment = (): number => {
 const calculateTotalMonthly = (): number => {
   return calculateMonthlyPayment() + 450 + 350 // Adding property tax and maintenance
 }
+
+// Replace the mapImage property with coordinates
+const coordinates = { lat: 48.4536589, lng: -123.3749017 }
 </script>
 
 <style scoped>
@@ -785,4 +827,4 @@ const calculateTotalMonthly = (): number => {
 .text-no-wrap {
   white-space: nowrap;
 }
-</style> 
+</style>

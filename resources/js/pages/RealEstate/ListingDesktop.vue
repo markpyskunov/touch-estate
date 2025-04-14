@@ -573,13 +573,13 @@
         <v-card flat style="border: 1px solid rgba(0,0,0,0.12)">
           <v-card-title class="text-h5">Location</v-card-title>
           <v-card-text>
-            <div class="map-container" style="height: 400px;">
-              <!-- Replace with your map component -->
-              <v-img
-                :src="listing.mapImage"
-                height="400"
-                cover
-              ></v-img>
+            <div class="map-container">
+              <v-card class="map-card">
+                <InteractiveMap
+                  :center="coordinates"
+                  :zoom="15"
+                />
+              </v-card>
             </div>
           </v-card-text>
         </v-card>
@@ -589,18 +589,9 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue'
+import {ref, onMounted} from 'vue'
 import { useLoadingStore } from '@/stores/loading'
-
-interface ListingImage {
-  url: string
-}
-
-interface PropertyDetail {
-  icon: string
-  label: string
-  value: string
-}
+import InteractiveMap from '@/components/InteractiveMap.vue'
 
 interface SubscribeForm {
   personalNote: string
@@ -640,52 +631,25 @@ interface Visit {
   type: 'nfc' | 'qr' | 'website'
 }
 
-interface Listing {
-  title: string
-  price: string
-  address: string
-  city: string
-  province: string
-  postalCode: string
-  mainImage: string
-  images: ListingImage[]
-  additionalImages: ListingImage[]
-  details: PropertyDetail[]
-  description: string
-  features: string[]
-  mapImage: string
-  bedrooms: number
-  bathrooms: number
-  area: number
-  mlsNumber: string
-}
-
-const listing = ref<Listing>({
+const listing = ref({
   title: 'Main information',
   price: '1,225,000',
-  address: '271 Cadillac Ave',
-  city: 'Saanich',
+  address: '1110 Samar Cres',
+  city: 'Langford',
   province: 'British Columbia',
-  postalCode: 'V8Z1T8',
-  mainImage: 'https://placehold.co/1200x500/333/fff?text=Property+Main+Image',
+  postalCode: 'V9B 0A1',
+  mainImage: '/images/properties/bathroom.jpg',
   images: [
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+1' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+2' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+3' },
+    { url: '/images/properties/living-room-1.jpg' },
+    { url: '/images/properties/kitchen-1.jpg' },
+    { url: '/images/properties/bedroom-1.jpg' },
   ],
   additionalImages: [
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+4' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+5' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+6' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+7' },
+    { url: '/images/properties/living-room-2.jpg' },
+    { url: '/images/properties/kitchen-2.jpg' },
+    { url: '/images/properties/bathroom.jpg' },
   ],
-  details: [
-    { icon: 'mdi-bed', label: 'Bedrooms', value: '4' },
-    { icon: 'mdi-shower', label: 'Bathrooms', value: '3' },
-    { icon: 'mdi-ruler-square', label: 'Square Feet', value: '2,500' },
-    { icon: 'mdi-garage', label: 'Parking', value: '2+1' },
-  ],
-  description: 'Beautiful family home in the desirable Tillicum area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
+  description: 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
   features: [
     'Modern Kitchen',
     'Hardwood Floors',
@@ -696,7 +660,6 @@ const listing = ref<Listing>({
     'Walk-in Closets',
     'Energy Efficient',
   ],
-  mapImage: 'https://placehold.co/1200x400/333/fff?text=Property+Location+Map',
   bedrooms: 4,
   bathrooms: 3,
   area: 2500,
@@ -708,10 +671,43 @@ const subscribeForm = ref<SubscribeForm>({
 })
 
 // Combine all images for the carousel
-const allImages = computed(() => [
-  { url: listing.value.mainImage },
-  ...listing.value.images,
-  ...listing.value.additionalImages
+const allImages = ref([
+  {
+    url: '/images/properties/exterior-side.jpg',
+    alt: 'Property Exterior Side View'
+  },
+  {
+    url: '/images/properties/exterior-back.jpg',
+    alt: 'Property Exterior Back View'
+  },
+  {
+    url: '/images/properties/living-room-1.jpg',
+    alt: 'Living Room View 1'
+  },
+  {
+    url: '/images/properties/living-room-2.jpg',
+    alt: 'Living Room View 2'
+  },
+  {
+    url: '/images/properties/kitchen-1.jpg',
+    alt: 'Kitchen View 1'
+  },
+  {
+    url: '/images/properties/kitchen-2.jpg',
+    alt: 'Kitchen View 2'
+  },
+  {
+    url: '/images/properties/bedroom-1.jpg',
+    alt: 'Bedroom View 1'
+  },
+  {
+    url: '/images/properties/bedroom-2.jpg',
+    alt: 'Bedroom View 2'
+  },
+  {
+    url: '/images/properties/bathroom.jpg',
+    alt: 'Bathroom View'
+  }
 ])
 
 // Mock data for previous notes
@@ -941,6 +937,9 @@ const calculateTotalMonthlyCost = (downPaymentPercentage: number): string => {
 }
 
 const loadingStore = useLoadingStore()
+
+// Replace the mapImage property with coordinates
+const coordinates = { lat: 48.44705905509525, lng: -123.54380246952951 }
 
 onMounted(async () => {
   loadingStore.show('Loading property details...')

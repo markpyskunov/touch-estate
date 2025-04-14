@@ -8,8 +8,6 @@ import LandingPageLayout from "@/layouts/LandingPageLayout.vue";
 import VisitGuard from "@/pages/RealEstate/VisitGuard.vue";
 import VisitVerification from "@/pages/RealEstate/VisitVerification.vue";
 
-console.log('Router module loaded') // Debug point 1
-
 const routes = [
   {
     path: '/',
