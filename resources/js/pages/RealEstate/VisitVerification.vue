@@ -120,7 +120,6 @@ const submitForm = async () => {
     // Redirect to the property page with campaign ID
     router.push({
       path: `/real-estate/property/${propertyId}`,
-      query: { campaign: campaignId }
     })
   } catch (error) {
     console.error('Error submitting form:', error)

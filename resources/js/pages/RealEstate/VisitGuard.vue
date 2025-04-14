@@ -2,7 +2,7 @@
   <v-container class="py-8 px-4" fluid>
     <v-card class="mx-auto" max-width="500" flat style="border: 1px solid rgba(0,0,0,0.12)">
       <v-card-title class="text-h5 text-center pa-4">
-        {{ campaign?.title || 'Welcome' }}
+        Welcome to {{ property?.name || 'the property' }}
       </v-card-title>
 
       <v-card-text class="pa-4">
@@ -121,21 +121,27 @@ import { useVisitStore } from '@/stores/visit'
 
 interface Campaign {
   id: string
-  title: string
   flags?: {
     use_email_login?: boolean
     use_sms_login?: boolean
   }
 }
 
+interface Property {
+  id: string
+  name: string
+}
+
 const route = useRoute()
 const router = useRouter()
 const visitStore = useVisitStore()
 
-// Get campaign ID from URL
-const campaignId = route.query.campaign as string
+// Get campaign and property IDs from URL
+const campaignId = route.query['campaign'] as string
+const propertyId = route.query['property'] as string
 
 const campaign = ref<Campaign | null>(null)
+const property = ref<Property | null>(null)
 const loading = ref(false)
 
 const form = ref({
@@ -156,19 +162,23 @@ const isFormValid = computed(() => {
   }
 })
 
-const fetchCampaign = async () => {
-  if (!campaignId) return
+const fetchData = async () => {
+  if (!campaignId || !propertyId) return
 
   try {
-    // Here you would fetch the campaign from your API
+    // Here you would fetch both campaign and property from your API
     // For now, using mock data
     campaign.value = {
       id: campaignId,
-      title: 'Welcome to 404-1110 Samar crescent',
       flags: {
         use_email_login: true,
         use_sms_login: true
       }
+    }
+
+    property.value = {
+      id: propertyId,
+      name: '404-1110 Samar crescent'
     }
 
     // Set default auth method based on available options
@@ -178,7 +188,7 @@ const fetchCampaign = async () => {
       form.value.authMethod = 'phone'
     }
   } catch (error) {
-    console.error('Error fetching campaign:', error)
+    console.error('Error fetching data:', error)
   }
 }
 
@@ -196,17 +206,24 @@ const submitForm = async () => {
     // Create the visit record
     visitStore.createVisit({
       campaignId,
-      propertyId: '1', // This will be replaced with actual property ID from backend
+      propertyId,
       visitorInfo: {
         name: form.value.name,
-        ...(form.value.authMethod === 'email' ? { email: form.value.email } : { phone: form.value.phone })
+        ...(
+            form.value.authMethod === 'email'
+                ? { email: form.value.email }
+                : { phone: form.value.phone }
+        )
       }
     })
 
     // Redirect to verification page
     router.push({
       path: '/real-estate/verify',
-      query: { campaign: campaignId }
+      query: {
+        campaign: campaignId,
+        property: propertyId
+      }
     })
   } catch (error) {
     console.error('Error submitting form:', error)
@@ -216,6 +233,6 @@ const submitForm = async () => {
 }
 
 onMounted(() => {
-  fetchCampaign()
+  fetchData()
 })
 </script>
