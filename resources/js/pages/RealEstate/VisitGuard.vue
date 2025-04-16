@@ -118,19 +118,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useVisitStore } from '@/stores/visit'
-
-interface Campaign {
-  id: string
-  flags?: {
-    use_email_login?: boolean
-    use_sms_login?: boolean
-  }
-}
-
-interface Property {
-  id: string
-  name: string
-}
+import {Campaign} from "@/contracts/campaigns";
+import {Property} from "@/contracts/properties";
 
 const route = useRoute()
 const router = useRouter()
@@ -178,11 +167,22 @@ const fetchData = async () => {
     // Here you would fetch both campaign and property from your API
     // For now, using mock data
     campaign.value = {
-      id: campaignId,
-      flags: {
-        use_email_login: true,
-        use_sms_login: true
-      }
+        id: campaignId,
+        fields: [
+            {
+                id: 'full_name',
+                required: true,
+                type: 'input[type=text]',
+                validation: {
+                    min: 1,
+                    max: 128,
+                },
+            }
+        ],
+        flags: {
+            use_email_login: true,
+            use_sms_login: true
+        },
     }
 
     property.value = {

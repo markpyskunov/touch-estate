@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             NfcQrTagSeeder::class,
             VisitorSeeder::class,
+            CampaignSeeder::class,
         ]);
     }
 }

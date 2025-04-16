@@ -3,34 +3,39 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\NfcQrTagResource;
 use App\Models\NfcQrTag;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Spatie\RouteAttributes\Attributes\Get;
 
 class LandingPageController extends Controller
 {
-    #[Get('go')]
-    public function landingPage(Request $request): JsonResponse
+    #[Get('lp/{code}')]
+    public function realEstateLandingPage(Request $request): JsonResponse|RedirectResponse
     {
-        $tagCode = $request->query('code');
+        $tagCode = $request->route('code');
         /** @var NfcQrTag|null $tag */
         $tag = NfcQrTag::query()->whereCode($tagCode)->first();
 
+        // No tag / No attached location / No attached campaign is OK to lead to error
         if (!$tag) {
-            return response()->json('Not found', 404);
+            return response()->json('Not found tag', 404);
         }
 
-        // No tag / No attached location / No attached campaign is OK to lead to error
-
-        $tagId = $tag->id;
         $locationId = $tag->location?->id;
         $campaignId = $tag->location->campaigns()->first()?->id;
 
-        // Need to redirect to vue SPA with Tag ID, location ID, campaign ID
-        return response()->json(
-            NfcQrTagResource::make($tag)
+        if (!$locationId) {
+            return response()->json('Not found property', 404);
+        }
+
+        if (!$campaignId) {
+            return response()->json('Not found campaign', 404);
+        }
+
+        return redirect(
+            config('app.url') . "/real-estate/visit?campaign={$campaignId}&property={$locationId}"
         );
     }
 }
