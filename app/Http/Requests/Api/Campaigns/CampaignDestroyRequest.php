@@ -11,7 +11,7 @@ class CampaignDestroyRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return $this->user()->can('delete', $this->getCampaign());
+        return $this->user()->can('destroy', $this->getCampaign());
     }
 
     public function rules(): array
