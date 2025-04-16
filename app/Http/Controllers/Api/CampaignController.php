@@ -14,17 +14,18 @@ use Illuminate\Http\JsonResponse;
 use Spatie\RouteAttributes\Attributes\Delete;
 use Spatie\RouteAttributes\Attributes\Get;
 use Spatie\RouteAttributes\Attributes\Group;
+use Spatie\RouteAttributes\Attributes\Middleware;
 use Spatie\RouteAttributes\Attributes\Patch;
 use Spatie\RouteAttributes\Attributes\Post;
 
 #[Group(prefix: 'api/v1/campaigns', as: 'api.v1.campaigns.')]
+#[Middleware(['auth:api'])]
 class CampaignController extends Controller
 {
     #[Get('/', name: 'index')]
     public function index(CampaignIndexRequest $request): JsonResponse
     {
-        $campaigns = Campaign::query()
-            ->latest()
+        $campaigns = Campaign::sortByDTO($request->toDto())
             ->paginate($request->input('per_page', 15));
 
         return CampaignResource::collection($campaigns)

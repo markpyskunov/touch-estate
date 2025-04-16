@@ -8,35 +8,36 @@ use App\Http\Requests\Api\Locations\LocationIndexRequest;
 use App\Http\Requests\Api\Locations\LocationShowRequest;
 use App\Http\Requests\Api\Locations\LocationStoreRequest;
 use App\Http\Requests\Api\Locations\LocationUpdateRequest;
-use App\Http\Resources\CampaignResource;
+use App\Http\Resources\LocationResource;
 use App\Models\Location;
 use Illuminate\Http\JsonResponse;
 use Spatie\RouteAttributes\Attributes\Delete;
 use Spatie\RouteAttributes\Attributes\Get;
 use Spatie\RouteAttributes\Attributes\Group;
+use Spatie\RouteAttributes\Attributes\Middleware;
 use Spatie\RouteAttributes\Attributes\Patch;
 use Spatie\RouteAttributes\Attributes\Post;
 
 #[Group(prefix: 'api/v1/locations', as: 'api.v1.locations.')]
+#[Middleware(['auth:api'])]
 class LocationController extends Controller
 {
     #[Get('/', name: 'index')]
     public function index(LocationIndexRequest $request): JsonResponse
     {
-        $campaigns = Location::query()
-            ->latest()
+        $locations = Location::sortByDTO($request->toDto())
             ->paginate($request->input('per_page', 15));
 
-        return CampaignResource::collection($campaigns)
+        return LocationResource::collection($locations)
             ->response();
     }
 
     #[Post('/', name: 'store')]
     public function store(LocationStoreRequest $request): JsonResponse
     {
-        $campaign = Location::create($request->validated());
+        $location = Location::create($request->validated());
 
-        return CampaignResource::make($campaign)
+        return LocationResource::make($location)
             ->response()
             ->setStatusCode(201);
     }
@@ -44,7 +45,7 @@ class LocationController extends Controller
     #[Get('{location}', name: 'show')]
     public function show(LocationShowRequest $request): JsonResponse
     {
-        return CampaignResource::make($request->getLocation())
+        return LocationResource::make($request->getLocation())
             ->response();
     }
 
@@ -53,7 +54,7 @@ class LocationController extends Controller
     {
         $request->getLocation()->update($request->validated());
 
-        return CampaignResource::make($request->getLocation()->refresh())
+        return LocationResource::make($request->getLocation()->refresh())
             ->response();
     }
 

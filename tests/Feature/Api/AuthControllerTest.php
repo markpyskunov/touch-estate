@@ -5,8 +5,10 @@ namespace Tests\Feature\Api;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
+#[Group('auth')]
 class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;

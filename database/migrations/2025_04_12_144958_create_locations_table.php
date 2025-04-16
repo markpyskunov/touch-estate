@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('company_id')->constrained()->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignUuid('address_id')->constrained()->restrictOnDelete()->cascadeOnUpdate();
             $table->string('name', 255);
-            $table->string('mls', 32);
+            $table->string('mls', 32)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -22,10 +22,10 @@ class CompanyFactory extends Factory
     public function definition(): array
     {
         return [
+            'address_id' => Address::factory(),
+            'contact_id' => Contact::factory(),
             'code' => Company::generateUniqueCode(),
             'name' => $this->faker->company(),
-            'address_id' => Address::factory()->create()->id,
-            'contact_id' => Contact::factory()->create()->id,
         ];
     }
 }

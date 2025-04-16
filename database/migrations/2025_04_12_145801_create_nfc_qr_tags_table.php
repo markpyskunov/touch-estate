@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('nfc_qr_tags', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('location_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignUuid('location_id')->nullable()->constrained()->restrictOnDelete()->restrictOnUpdate();
             $table->string('name', 255);
             $table->string('code', 8);
             $table->timestamps();

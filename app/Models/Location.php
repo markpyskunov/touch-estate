@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasUUID;
+use App\Models\Traits\HasSorting;
 
 /**
  * @property string $id
@@ -27,12 +28,16 @@ use App\Models\Traits\HasUUID;
  * @property-read \App\Models\LocationFeature[] $locationFeatures
  * @property-read \App\Models\LocationPricing[] $locationPricings
  * @property-read \App\Models\LocationRoom[] $locationRooms
+ * @property-read \App\Models\LocationMeta[] $locationMetas
+ * @property-read \App\Models\NfcQrTag[] $nfcQrTags
+ * @property-read null|\App\Models\Campaign $campaign
  */
 class Location extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use HasUUID;
+    use HasSorting;
 
     protected $fillable = [
         'company_id',
@@ -73,19 +78,29 @@ class Location extends Model
         return $this->hasMany(Visitor::class);
     }
 
-    public function campaigns(): BelongsToMany
-    {
-        return $this->belongsToMany(Location::class, 'locations_campaigns');
-    }
-
     public function locationDocuments(): HasMany
     {
         return $this->hasMany(LocationDocument::class);
     }
 
+    public function locationMetas(): HasMany
+    {
+        return $this->hasMany(LocationMeta::class);
+    }
+
+    public function campaign(): HasOne
+    {
+        return $this->hasOne(Campaign::class);
+    }
+
     public function locationRooms(): HasMany
     {
         return $this->hasMany(LocationRoom::class);
+    }
+
+    public function nfcQrTags(): HasMany
+    {
+        return $this->hasMany(NfcQrTag::class);
     }
 
     protected function fullAddress(): Attribute

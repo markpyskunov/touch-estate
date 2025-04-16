@@ -15,7 +15,7 @@ class CampaignSeeder extends Seeder
 
         foreach ($locations as $location) {
             // Create a campaign for each location
-            Campaign::create([
+            $location->campaign()->create([
                 'name' => "{$location->name} Campaign",
                 'payload' => [
                     'fields' => [
@@ -33,27 +33,6 @@ class CampaignSeeder extends Seeder
                         'use_email_login' => true,
                         'use_sms_login' => true,
                     ],
-                ]
-            ]);
-        }
-
-        // Create a specific campaign for the ABCD0000 tag
-        $dummyLocation = Location::where('name', 'Victoria Waterfront')->first();
-        if ($dummyLocation) {
-            Campaign::create([
-                'name' => 'ABCD0000 Demo Campaign',
-                'payload' => [
-                    'location_id' => $dummyLocation->id,
-                    'description' => 'Demo campaign for ABCD0000 tag',
-                    'start_date' => now()->subDays(30)->toDateString(),
-                    'end_date' => now()->addDays(30)->toDateString(),
-                    'status' => 'active',
-                    'features' => [
-                        'email_login' => true,
-                        'sms_login' => true,
-                        'require_verification' => true,
-                        'verification_code_length' => 6,
-                    ]
                 ]
             ]);
         }

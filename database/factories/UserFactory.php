@@ -7,7 +7,6 @@ use App\Models\Address;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -19,13 +18,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => Company::factory(),
+            'address_id' => Address::factory(),
+            'contact_id' => Contact::factory(),
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'company_id' => Company::factory()->create()->id,
-            'address_id' => Address::factory()->create()->id,
-            'contact_id' => Contact::factory()->create()->id,
         ];
     }
 }
