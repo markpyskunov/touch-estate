@@ -119,6 +119,21 @@
           </v-text-field>
         </template>
 
+        <!-- Consent Form -->
+        <v-checkbox
+          v-model="consent"
+          class="mb-6"
+          :rules="[v => !!v || 'The consent is required to continue']"
+          required
+        >
+          <template v-slot:label>
+            <div class="text-body-2">
+              I agree to receive a one-time notification about this property visit.
+              I understand that I can subscribe to receive ongoing updates by providing additional consent later.
+            </div>
+          </template>
+        </v-checkbox>
+
         <!-- Submit Button -->
         <v-btn
           color="primary"
@@ -155,6 +170,7 @@ const loading = ref(false)
 
 // Initialize form with dynamic fields
 const form = ref<Record<string, string>>({})
+const consent = ref(false)
 
 // Computed property for campaign fields
 const campaignFields = computed(() => {
@@ -185,6 +201,7 @@ const getFieldRules = (field: any) => {
 // Computed property for form validation
 const isFormValid = computed(() => {
   if (!visitStore.property) return false
+  if (!consent.value) return false
 
   // Check dynamic fields
   for (const field of campaignFields.value) {
@@ -255,7 +272,10 @@ const submitForm = async () => {
   if (!visitStore.property) return
 
   try {
-    await visitStore.sendVerificationCode(form.value)
+    await visitStore.sendVerificationCode({
+      ...form.value,
+      consent: consent.value
+    })
 
     router.push({
       path: '/real-estate/verify',
