@@ -3,6 +3,10 @@ import {Flags} from "@/contracts/campaigns/flags";
 
 export interface Campaign {
     id: string;
-    fields: Field[];
-    flags?: Flags;
+    name: string;
+    title: string;
+    payload: {
+        fields: Field[];
+        flags: Flags;
+    };
 }

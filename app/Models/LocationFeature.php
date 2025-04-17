@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Traits\HasUUID;
 
+/**
+ * @property string $location_id
+ * @property LocationFeatureName $feature
+ * @property string $value
+ */
 class LocationFeature extends Model
 {
     use HasFactory;

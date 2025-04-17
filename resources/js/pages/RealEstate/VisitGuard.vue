@@ -1,8 +1,8 @@
 <template>
-  <v-container class="py-8 px-4" fluid>
+  <v-container class="py-8 px-4" fluid v-if="visitStore.property">
     <v-card class="mx-auto" max-width="500" flat style="border: 1px solid rgba(0,0,0,0.12)">
       <v-card-title class="text-h5 text-center pa-4">
-        Welcome to {{ property?.name || 'the property' }}
+        Welcome to {{ visitStore.property.name || 'the property' }}
       </v-card-title>
 
       <v-card-text class="pa-4">
@@ -25,22 +25,22 @@
         <!-- Authentication Method Selection -->
         <div class="d-flex mb-6">
           <v-btn
-            v-if="campaign?.flags?.use_email_login"
-            :color="form.authMethod === 'email' ? 'primary' : undefined"
+            v-if="visitStore.property.campaign.payload.flags.use_email_login"
+            :color="visitStore.authMethod === 'email' ? 'primary' : undefined"
             variant="outlined"
             class="text-none flex-grow-1 me-3"
-            @click="form.authMethod = 'email'"
+            @click="visitStore.authMethod = 'email'"
           >
             <v-icon start>mdi-email</v-icon>
             Email Login
           </v-btn>
 
           <v-btn
-            v-if="campaign?.flags?.use_sms_login"
-            :color="form.authMethod === 'phone' ? 'primary' : undefined"
+            v-if="visitStore.property.campaign.payload.flags.use_sms_login"
+            :color="visitStore.authMethod === 'phone' ? 'primary' : undefined"
             variant="outlined"
             class="text-none flex-grow-1"
-            @click="form.authMethod = 'phone'"
+            @click="visitStore.authMethod = 'phone'"
           >
             <v-icon start>mdi-cellphone</v-icon>
             SMS Login
@@ -49,7 +49,7 @@
 
         <!-- Email Input -->
         <v-text-field
-          v-if="form.authMethod === 'email' && campaign?.flags?.use_email_login"
+          v-if="visitStore.authMethod === 'email' && visitStore.property.campaign.payload.flags.use_email_login"
           v-model="form.email"
           label="Email Address"
           type="email"
@@ -65,7 +65,7 @@
 
         <!-- Phone Input -->
         <v-text-field
-          v-if="form.authMethod === 'phone' && campaign?.flags?.use_sms_login"
+          v-if="visitStore.authMethod === 'phone' && visitStore.property.campaign.payload.flags.use_sms_login"
           v-model="form.phone"
           label="Phone Number"
           variant="outlined"
@@ -117,25 +117,24 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useVisitStore } from '@/stores/visit'
-import {Campaign} from "@/contracts/campaigns";
+import {useVisitStore, VisitVerification} from '@/stores/visit'
 import {Property} from "@/contracts/properties";
+import { useLoadingStore } from '@/stores/loading'
+import axios from 'axios';
 
 const route = useRoute()
 const router = useRouter()
+const loadingStore = useLoadingStore()
 const visitStore = useVisitStore()
 
 // Get campaign and property IDs from URL
-const campaignId = route.query['campaign'] as string
 const propertyId = route.query['property'] as string
+const force = !!route.query['force']
 
-const campaign = ref<Campaign | null>(null)
-const property = ref<Property | null>(null)
 const loading = ref(false)
 
 const form = ref({
   name: '',
-  authMethod: 'email' as 'email' | 'phone',
   email: '',
   phone: '',
   consent: false
@@ -143,94 +142,83 @@ const form = ref({
 
 const isFormValid = computed(() => {
   if (!form.value.name || !form.value.consent) return false
+  if (!visitStore.property) return false
 
-  if (form.value.authMethod === 'email') {
-    return campaign.value?.flags?.use_email_login && /.+@.+\..+/.test(form.value.email)
+  if (visitStore.authMethod === 'email') {
+    return visitStore.property.campaign.payload.flags.use_email_login && /.+@.+\..+/.test(form.value.email)
   } else {
-    return campaign.value?.flags?.use_sms_login && /^\d{10}$/.test(form.value.phone)
+    return visitStore.property.campaign.payload.flags.use_sms_login && /^\d{10}$/.test(form.value.phone)
   }
 })
 
 const fetchData = async () => {
-  if (!campaignId || !propertyId) return
+  if (!propertyId) return
 
   try {
-    // Check if visit is already verified
-    if (visitStore.isCampaignVerified(campaignId)) {
-      router.push({
-        path: `/real-estate/property/${propertyId}`,
-        query: { campaign: campaignId }
-      })
-      return
-    }
+      loadingStore.show()
 
-    // Here you would fetch both campaign and property from your API
-    // For now, using mock data
-    campaign.value = {
-        id: campaignId,
-        fields: [
-            {
-                id: 'full_name',
-                required: true,
-                type: 'input[type=text]',
-                validation: {
-                    min: 1,
-                    max: 128,
-                },
-            }
-        ],
-        flags: {
-            use_email_login: true,
-            use_sms_login: true
-        },
-    }
+    const { data: propertyResponse } = await axios.get<Property>(`/api/v1/visitors/properties/${propertyId}`, {
+      params: {
+        property_id: propertyId,
+        sid: route.query['sid'],
+        access_code: route.query['access_code'],
+      }
+    });
+    visitStore.property = propertyResponse;
 
-    property.value = {
-      id: propertyId,
-      name: '404-1110 Samar crescent'
-    }
+    const { data: visitVerificationResponse } = await axios.get<VisitVerification>(`/api/v1/visitors/verify-visit/${visitStore.visitorId}/${propertyId}/${visitStore.property.campaign.id}`, {
+        params: {
+            force,
+        }
+    });
+
+      visitStore.visitVerification = visitVerificationResponse;
+
+      if (visitStore.visitVerification.is_verified) {
+          router.push({
+              path: `/real-estate/property/${propertyId}`,
+              query: {
+                  campaign: visitStore.property.campaign.id,
+                  property: propertyId
+              }
+          });
+          return;
+      }
 
     // Set default auth method based on available options
-    if (campaign.value.flags?.use_email_login) {
-      form.value.authMethod = 'email'
-    } else if (campaign.value.flags?.use_sms_login) {
-      form.value.authMethod = 'phone'
+    if (visitStore.property.campaign.payload.flags.use_email_login) {
+      visitStore.authMethod = 'email'
+    } else if (visitStore.property.campaign.payload.flags.use_sms_login) {
+      visitStore.authMethod = 'phone'
     }
   } catch (error) {
     console.error('Error fetching data:', error)
+    // Handle error appropriately
+  } finally {
+      loadingStore.hide();
   }
 }
 
 const submitForm = async () => {
   if (!isFormValid.value) return
+  if (!visitStore.property) return
 
   loading.value = true
 
   try {
-    // Here you would:
-    // 1. Send verification code to email/phone
-    // 2. Store the form data temporarily
-    // 3. Redirect to verification page
-
-    // Create the visit record
-    visitStore.createVisit({
-      campaignId,
-      propertyId,
-      visitorInfo: {
-        name: form.value.name,
-        ...(
-            form.value.authMethod === 'email'
-                ? { email: form.value.email }
-                : { phone: form.value.phone }
-        )
-      }
-    })
+      await axios.post<VisitVerification>(`/api/v1/visitors/verify-visit/${visitStore.visitorId}/${propertyId}/${visitStore.property.campaign.id}`, {
+          type: visitStore.authMethod,
+          contact: visitStore.authMethod === 'email'
+              ? form.value.email
+              : form.value.phone,
+          name: form.value.name,
+      });
 
     // Redirect to verification page
     router.push({
       path: '/real-estate/verify',
       query: {
-        campaign: campaignId,
+        campaign: visitStore.property.campaign.id,
         property: propertyId
       }
     })

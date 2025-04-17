@@ -1,8 +1,8 @@
 <template>
-  <v-container class="py-8 px-4" fluid>
+  <v-container class="py-8 px-4" fluid v-if="visitStore.property && visitStore.property.campaign">
     <v-card class="mx-auto" max-width="500" flat style="border: 1px solid rgba(0,0,0,0.12)">
       <v-card-title class="text-h5 text-center pa-4">
-        {{ campaign?.title || 'Verification code needed' }}
+        {{ visitStore.property.campaign.title || 'Verification code needed' }}
       </v-card-title>
 
       <v-card-text class="text-center pa-4">
@@ -29,29 +29,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useVisitStore } from '@/stores/visit'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import {useVisitStore, VisitVerification} from '@/stores/visit'
+import axios from "axios";
 
-interface Campaign {
-  id: string
-  title: string
-}
-
-const route = useRoute()
 const router = useRouter()
 const visitStore = useVisitStore()
 
-// Get campaign ID from URL
-const campaignId = route.query['campaign'] as string
-
-const campaign = ref<Campaign | null>(null)
 const verificationCode = ref('')
 const isSubmitting = ref(false)
 
-const verificationMethod = computed(() => {
-  return visitStore.visitor?.email ? 'email' : 'phone'
-})
+const verificationMethod = computed(() => visitStore.authMethod === 'email'
+    ? 'email'
+    : 'phone'
+)
 
 const verificationStage = computed(() => {
   if (verificationMethod.value === 'email') {
@@ -69,57 +61,20 @@ const verificationStage = computed(() => {
   }
 })
 
-const fetchCampaign = async () => {
-  if (!campaignId) return
-
-  try {
-    // Here you would fetch the campaign from your API
-    // For now, using mock data
-    campaign.value = {
-      id: campaignId,
-      title: 'Welcome to 404-1110 Samar crescent'
-    }
-  } catch (error) {
-    console.error('Error fetching campaign:', error)
-  }
-}
-
 const submitForm = async () => {
   if (!verificationCode.value || verificationCode.value.length !== 6) return
+  if (!visitStore.property) return
 
   isSubmitting.value = true
 
   try {
-    // Demo code check
-    if (verificationCode.value === '000000') {
-      // Mark the visit as verified
-      visitStore.setVerified(campaignId)
-
-      // Redirect to property page
-      router.push({
-        path: '/real-estate/property/1',
-        query: { campaign: campaignId }
-      })
-      return
-    }
-
-    // Here you would:
-    // 1. Verify the code with your backend
-    // 2. Update the visit status
-    // 3. Redirect to the property page
-
-    // Get the property ID from the store
-    const propertyId = visitStore.getPropertyId(campaignId)
-    if (!propertyId) {
-      throw new Error('Property ID not found')
-    }
-
-    // Mark the visit as verified
-    visitStore.setVerified(campaignId)
+    await axios.patch<VisitVerification>(`/api/v1/visitors/verify-visit/${visitStore.visitorId}/${visitStore.property.id}/${visitStore.property.campaign.id}`, {
+        code: verificationCode.value,
+    });
 
     // Redirect to the property page with campaign ID
     router.push({
-      path: `/real-estate/property/${propertyId}`,
+      path: `/real-estate/property/${visitStore.property.id}`,
     })
   } catch (error) {
     console.error('Error submitting form:', error)
@@ -129,8 +84,4 @@ const submitForm = async () => {
     isSubmitting.value = false
   }
 }
-
-onMounted(() => {
-  fetchCampaign()
-})
 </script>

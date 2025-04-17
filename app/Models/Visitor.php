@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasUUID;
 
 /**
  * @property string $id
  * @property string $location_id
- * @property string $visitor_identified_id
  * @property array $collected_data
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
@@ -25,8 +25,8 @@ class Visitor extends Model
     use HasUUID;
 
     protected $fillable = [
+        'id',
         'location_id',
-        'visitor_identified_id',
         'collected_data',
     ];
 
@@ -34,7 +34,7 @@ class Visitor extends Model
         'collected_data' => 'json',
     ];
 
-    public function location()
+    public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
     }

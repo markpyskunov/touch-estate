@@ -8,7 +8,7 @@ use App\Http\Requests\Api\Locations\LocationIndexRequest;
 use App\Http\Requests\Api\Locations\LocationShowRequest;
 use App\Http\Requests\Api\Locations\LocationStoreRequest;
 use App\Http\Requests\Api\Locations\LocationUpdateRequest;
-use App\Http\Resources\LocationResource;
+use App\Http\Resources\PropertyResource;
 use App\Models\Location;
 use Illuminate\Http\JsonResponse;
 use Spatie\RouteAttributes\Attributes\Delete;
@@ -25,10 +25,20 @@ class LocationController extends Controller
     #[Get('/', name: 'index')]
     public function index(LocationIndexRequest $request): JsonResponse
     {
-        $locations = Location::sortByDTO($request->toDto())
+        $locations = Location::query()
+            ->with([
+                'address',
+                'locationImages',
+                'locationFeatures',
+                'locationPricings',
+                'locationMetas',
+                'locationRooms',
+                'campaign',
+            ])
+            ->sortByDTO($request->toDto())
             ->paginate($request->input('per_page', 15));
 
-        return LocationResource::collection($locations)
+        return PropertyResource::collection($locations)
             ->response();
     }
 
@@ -37,7 +47,7 @@ class LocationController extends Controller
     {
         $location = Location::create($request->validated());
 
-        return LocationResource::make($location)
+        return PropertyResource::make($location)
             ->response()
             ->setStatusCode(201);
     }
@@ -45,7 +55,7 @@ class LocationController extends Controller
     #[Get('{location}', name: 'show')]
     public function show(LocationShowRequest $request): JsonResponse
     {
-        return LocationResource::make($request->getLocation())
+        return PropertyResource::make($request->getLocation())
             ->response();
     }
 
@@ -54,7 +64,7 @@ class LocationController extends Controller
     {
         $request->getLocation()->update($request->validated());
 
-        return LocationResource::make($request->getLocation()->refresh())
+        return PropertyResource::make($request->getLocation()->refresh())
             ->response();
     }
 

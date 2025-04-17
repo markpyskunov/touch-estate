@@ -17,9 +17,10 @@ class VisitorSeeder extends Seeder
             for ($i = 0; $i < 12; $i++) {
                 $location->visitors()->create([
                     'collected_data' => [
-                        'name' => $faker->name(),
-                        'email' => $faker->safeEmail(),
-                        'phone' => $faker->phoneNumber(),
+                        'full_name' => $faker->name(),
+                        'emails' => [
+                            $faker->safeEmail(),
+                        ],
                     ],
                 ]);
             }
