@@ -12,13 +12,11 @@ class NfcQrTagSeeder extends Seeder
     {
         $locations = Location::all();
 
-        $currentID = 0;
+        $currentID = 1;
         foreach ($locations as $location) {
-            $codeID = str_pad((string) $currentID, 4, '0', STR_PAD_LEFT);
             NfcQrTag::create([
                 'location_id' => $location->id,
                 'name' => "Tag {$currentID}",
-                'code' => "{$location->company->code}{$codeID}",
             ]);
             $currentID++;
         }

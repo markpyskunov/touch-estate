@@ -15,7 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('location_id')->nullable()->constrained()->restrictOnDelete()->restrictOnUpdate();
             $table->string('name', 255);
-            $table->string('code', 8);
+            $table->string('code', 4);
+            $table->unsignedMediumInteger('index');
             $table->timestamps();
             $table->softDeletes();
         });

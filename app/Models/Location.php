@@ -31,6 +31,7 @@ use App\Models\Traits\HasSorting;
  * @property-read \App\Models\LocationMeta[] $locationMetas
  * @property-read \App\Models\NfcQrTag[] $nfcQrTags
  * @property-read null|\App\Models\Campaign $campaign
+ * @property-read \App\Models\Company $company
  */
 class Location extends Model
 {

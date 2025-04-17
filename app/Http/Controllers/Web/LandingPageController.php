@@ -17,10 +17,13 @@ class LandingPageController extends Controller
     public function realEstateLandingPage(Request $request): JsonResponse|RedirectResponse
     {
         $tagCode = $request->route('code');
+        $companyCode = Str::substr($tagCode, 0, 4);
+        $index = (int) Str::substr($tagCode, 4, 4);
+
         /** @var NfcQrTag|null $tag */
         $tag = NfcQrTag::with([
             'location.campaign',
-        ])->whereCode($tagCode)->first();
+        ])->where('code', $companyCode)->where('index', $index)->first();
 
         // No tag / No attached location / No attached campaign is OK to lead to error
         if (!$tag) {
