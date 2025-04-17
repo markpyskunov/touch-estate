@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Public\FetchVisitPropertyPayloadRequest;
 use App\Http\Resources\PropertyResource;
+use App\Models\Campaign;
 use App\Models\Location;
 use App\Models\Visitor;
 use Illuminate\Http\JsonResponse;
@@ -66,51 +67,70 @@ class VisitorController extends Controller
     #[Post('verify-visit/{visitor}/{property}/{campaign}', name: 'collectVerificationData')]
     public function collectVerificationData(Request $request): JsonResponse
     {
-        $type = $request->input('type');
         $visitKey = "visits.visitor_{$request->route('visitor')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
         $visitData = Cache::get($visitKey);
         if (!$visitData) {
             return response()->json([
-                'message' => 'no visit to collect data'
+                'message' => 'no visit to verify',
             ], 417);
         }
 
-        $visitData['code'] = '000000';
-        $visitData['data'] = [
-            'full_name' => $request->input('name'),
-        ];
+        $visitor = Visitor::find($request->route('visitor')) ?? new Visitor();
+        $campaign = Campaign::findOrFail($request->route('campaign'));
 
-        switch ($type) {
-            case 'email':
-                // Collect email
-                $emails = $visitData['data']['emails'] ?? [];
-                $emails[] = $request->input('contact');
-                $emails = array_unique($emails);
-                $visitData['data']['emails'] = $emails;
-                // Send verification email
-                $visitData['verification_sent'] = true;
-                break;
+        $existingData = $visitor->collected_data ?? [];
+        $campaignFields = $campaign->payload['fields'];
 
-            case 'sms':
-                // Collect phone number
-                $phones = $visitData['data']['phones'] ?? [];
-                $phones[] = $request->input('contact');
-                $phones = array_unique($phones);
-                $visitData['data']['phones'] = $phones;
-                // Send verification sms
-                $visitData['verification_sent'] = true;
-                break;
+        $data = $existingData;
+        foreach ($campaignFields as $field) {
+            $fieldId = $field['id'];
+            if ($field['required'] && $request->missing($fieldId)) {
+                throw new \RuntimeException("Failed to collect required field {$fieldId}");
+            }
+
+            $data[$fieldId] = $request->input($fieldId);
         }
+
+        // Handle email and phone separately to maintain history
+        if ($request->has('email')) {
+            $data['emails'] = array_unique(
+                array_filter(
+                    array_merge(
+                        $data['emails'] ?? [],
+                        [$request->input('email')]
+                    )
+                )
+            );
+        }
+
+        if ($request->has('phone')) {
+            $data['phones'] = array_unique(
+                array_filter(
+                    array_merge(
+                        $data['phones'] ?? [],
+                        [$request->input('phone')]
+                    )
+                )
+            );
+        }
+
+        // Update visitor data
+        $visitor->collected_data = $data;
+        $visitor->save();
+
+        // Generate verification code
+        $visitData['code'] = '000000';
+
+        // Send the code
+        $visitData['verification_sent'] = true;
 
         Cache::put(
             $visitKey,
             $visitData,
-            ttl: now()->addDays(2)
+            now()->addDays(2)
         );
 
-        return response()->json(
-            Cache::get($visitKey)
-        );
+        return response()->json($visitData);
     }
 
     #[Patch('verify-visit/{visitor}/{property}/{campaign}', name: 'finishVerification')]
@@ -137,31 +157,6 @@ class VisitorController extends Controller
             $visitData,
             ttl: now()->addDays(2)
         );
-
-        $visitor = Visitor::find($request->route('visitor'));
-        if ($visitor === null) {
-            Visitor::create([
-                'id' => $request->route('visitor'),
-                'location_id' => $request->route('property'),
-                'collected_data' => $visitData['data'],
-            ]);
-        } else {
-            $mergedData = $visitor->collected_data;
-            $mergedData['emails'] = array_unique(
-                array_merge(
-                    $mergedData['emails'] ?? [],
-                    $visitData['data']['emails'] ?? []
-                )
-            );
-
-            $mergedData['phones'] = array_unique(
-                array_merge(
-                    $mergedData['phones'] ?? [],
-                    $visitData['data']['phones'] ?? []
-                )
-            );
-            $visitor->update(['collected_data' => $mergedData]);
-        }
 
         return response()->json(
             Cache::get($visitKey)
