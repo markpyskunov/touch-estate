@@ -11,16 +11,52 @@
           We'll send you a verification code to confirm your identity.
         </p>
 
-        <!-- Name Input -->
-        <v-text-field
-          v-model="form.name"
-          label="Full Name"
-          variant="outlined"
-          density="comfortable"
-          class="mb-6"
-          :rules="[v => !!v || 'Name is required']"
-          required
-        />
+        <!-- Dynamic Form Fields -->
+        <template v-for="field in campaignFields" :key="field.id">
+          <v-text-field
+            v-if="field.type === 'input[type=text]'"
+            v-model="form[field.id]"
+            :label="field.label || field.id"
+            variant="outlined"
+            density="comfortable"
+            class="mb-6"
+            :rules="getFieldRules(field)"
+            :required="field.required"
+          />
+
+<!--          <v-textarea-->
+<!--            v-else-if="field.type === 'textarea'"-->
+<!--            v-model="form[field.id]"-->
+<!--            :label="field.label || field.id"-->
+<!--            variant="outlined"-->
+<!--            density="comfortable"-->
+<!--            class="mb-6"-->
+<!--            :rules="getFieldRules(field)"-->
+<!--            :required="field.required"-->
+<!--            rows="3"-->
+<!--          />-->
+
+<!--          <v-select-->
+<!--            v-else-if="field.type === 'select'"-->
+<!--            v-model="form[field.id]"-->
+<!--            :label="field.label || field.id"-->
+<!--            :items="field.options || []"-->
+<!--            variant="outlined"-->
+<!--            density="comfortable"-->
+<!--            class="mb-6"-->
+<!--            :rules="getFieldRules(field)"-->
+<!--            :required="field.required"-->
+<!--          />-->
+
+<!--          <v-checkbox-->
+<!--            v-else-if="field.type === 'checkbox'"-->
+<!--            v-model="form[field.id]"-->
+<!--            :label="field.label || field.id"-->
+<!--            class="mb-6"-->
+<!--            :rules="getFieldRules(field)"-->
+<!--            :required="field.required"-->
+<!--          />-->
+        </template>
 
         <!-- Authentication Method Selection -->
         <div class="d-flex mb-6">
@@ -47,55 +83,41 @@
           </v-btn>
         </div>
 
-        <!-- Email Input -->
-        <v-text-field
-          v-if="visitStore.authMethod === 'email' && visitStore.property.campaign.payload.flags.use_email_login"
-          v-model="form.email"
-          label="Email Address"
-          type="email"
-          variant="outlined"
-          density="comfortable"
-          class="mb-6"
-          :rules="[
-            v => !!v || 'Email is required',
-            v => /.+@.+\..+/.test(v) || 'Email must be valid'
-          ]"
-          required
-        />
+        <!-- Dynamic Authentication Fields -->
+        <template v-if="visitStore.authMethod === 'email' && visitStore.property.campaign.payload.flags.use_email_login">
+          <v-text-field
+            v-model="form['email']!"
+            label="Email Address"
+            type="email"
+            variant="outlined"
+            density="comfortable"
+            class="mb-6"
+            :rules="[
+              v => !!v || 'Email is required',
+              v => /.+@.+\..+/.test(v) || 'Email must be valid'
+            ]"
+            required
+          />
+        </template>
 
-        <!-- Phone Input -->
-        <v-text-field
-          v-if="visitStore.authMethod === 'phone' && visitStore.property.campaign.payload.flags.use_sms_login"
-          v-model="form.phone"
-          label="Phone Number"
-          variant="outlined"
-          density="comfortable"
-          class="mb-6"
-          :rules="[
-            v => !!v || 'Phone number is required',
-            v => /^\d{10}$/.test(v) || 'Phone must be 10 digits'
-          ]"
-          required
-        >
-          <template v-slot:prepend-inner>
-            <span class="text-grey">+1</span>
-          </template>
-        </v-text-field>
-
-        <!-- Consent Form -->
-        <v-checkbox
-          v-model="form.consent"
-          class="mb-6"
-          :rules="[v => !!v || 'The consent is required to continue']"
-          required
-        >
-          <template v-slot:label>
-            <div class="text-body-2">
-              I agree to receive a one-time notification about this property visit.
-              I understand that I can subscribe to receive ongoing updates by providing additional consent later.
-            </div>
-          </template>
-        </v-checkbox>
+        <template v-if="visitStore.authMethod === 'phone' && visitStore.property.campaign.payload.flags.use_sms_login">
+          <v-text-field
+            v-model="form['phone']!"
+            label="Phone Number"
+            variant="outlined"
+            density="comfortable"
+            class="mb-6"
+            :rules="[
+              v => !!v || 'Phone number is required',
+              v => /^\d{10}$/.test(v) || 'Phone must be 10 digits'
+            ]"
+            required
+          >
+            <template v-slot:prepend-inner>
+              <span class="text-grey">+1</span>
+            </template>
+          </v-text-field>
+        </template>
 
         <!-- Submit Button -->
         <v-btn
@@ -131,51 +153,88 @@ const force = !!route.query['force']
 
 const loading = ref(false)
 
-const form = ref({
-  name: '',
-  email: '',
-  phone: '',
-  consent: false
+// Initialize form with dynamic fields
+const form = ref<Record<string, string>>({})
+
+// Computed property for campaign fields
+const campaignFields = computed(() => {
+  if (!visitStore.property?.campaign.payload.fields) return []
+  return visitStore.property.campaign.payload.fields
 })
 
+// Function to get validation rules for a field
+const getFieldRules = (field: any) => {
+  const rules = []
+  if (field.required) {
+    rules.push((v: any) => !!v || `${field.label || field.id} is required`)
+  }
+  if (field.validation) {
+    if (field.validation.pattern) {
+      rules.push((v: any) => new RegExp(field.validation.pattern).test(v) || field.validation.message || 'Invalid format')
+    }
+    if (field.validation.min) {
+      rules.push((v: any) => v.length >= field.validation.min || `Minimum ${field.validation.min} characters required`)
+    }
+    if (field.validation.max) {
+      rules.push((v: any) => v.length <= field.validation.max || `Maximum ${field.validation.max} characters allowed`)
+    }
+  }
+  return rules
+}
+
+// Computed property for form validation
 const isFormValid = computed(() => {
-  if (!form.value.name || !form.value.consent) return false
   if (!visitStore.property) return false
 
-  if (visitStore.authMethod === 'email') {
-    return visitStore.property.campaign.payload.flags.use_email_login && /.+@.+\..+/.test(form.value.email)
-  } else {
-    return visitStore.property.campaign.payload.flags.use_sms_login && /^\d{10}$/.test(form.value.phone)
+  // Check dynamic fields
+  for (const field of campaignFields.value) {
+    if (field.required && !form.value[field.id]) return false
+    if (field.validation) {
+      const value = form.value[field.id]
+        if (value) {
+            if (field.validation.pattern && !new RegExp(field.validation.pattern).test(value)) return false
+            if (field.validation.min && value.length < field.validation.min) return false
+            if (field.validation.max && value.length > field.validation.max) return false
+        }
+    }
   }
+
+  // Check auth method fields based on campaign flags
+  if (visitStore.authMethod === 'email' && visitStore.property.campaign.payload.flags.use_email_login) {
+    return /.+@.+\..+/.test(form.value['email']!)
+  } else if (visitStore.authMethod === 'phone' && visitStore.property.campaign.payload.flags.use_sms_login) {
+    return /^\d{10}$/.test(form.value['phone']!)
+  }
+
+  return false
 })
 
 const fetchData = async () => {
   if (!propertyId) return
 
   try {
-      loadingStore.show();
+    loadingStore.show()
     await visitStore.fetchProperty(
       propertyId,
       route.query['sid'] as string,
       route.query['access_code'] as string
     )
 
-      if (!visitStore.property) {
-          throw new Error('Something went wrong - code 1');
-      }
+    if (!visitStore.property) {
+      throw new Error('Something went wrong - code 1')
+    }
 
     await visitStore.checkVerificationStatus(propertyId, force)
 
-      if (!visitStore.visitVerification) {
-          throw new Error('Something went wrong - code 2');
-      }
+    if (!visitStore.visitVerification) {
+      throw new Error('Something went wrong - code 2')
+    }
 
-      console.log('visitStore.visitVerification', visitStore.visitVerification)
     if (visitStore.visitVerification.is_verified) {
       router.push({
         path: `/real-estate/property/${propertyId}`
-      });
-      return;
+      })
+      return
     }
 
     // Set default auth method based on available options
@@ -186,9 +245,8 @@ const fetchData = async () => {
     }
   } catch (error) {
     console.error('Error fetching data:', error)
-    // Handle error appropriately
   } finally {
-      loadingStore.hide();
+    loadingStore.hide()
   }
 }
 
@@ -197,12 +255,7 @@ const submitForm = async () => {
   if (!visitStore.property) return
 
   try {
-    await visitStore.sendVerificationCode({
-      name: form.value.name,
-      ...(visitStore.authMethod === 'email'
-          ? { email: form.value.email }
-          : { phone: form.value.phone })
-    })
+    await visitStore.sendVerificationCode(form.value)
 
     router.push({
       path: '/real-estate/verify',
@@ -214,7 +267,6 @@ const submitForm = async () => {
     })
   } catch (error) {
     console.error('Error submitting form:', error)
-    // Handle error appropriately
   }
 }
 

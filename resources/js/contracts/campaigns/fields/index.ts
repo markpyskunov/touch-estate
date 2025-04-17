@@ -1,6 +1,7 @@
 interface InputTextValidation {
     min?: number;
     max?: number;
+    pattern?: string;
 }
 
 type Validation =
@@ -9,6 +10,7 @@ type Validation =
 interface InputTextField {
     id: string;
     required: boolean;
+    label: string;
     type: 'input[type=text]';
     validation: Validation;
 }

@@ -23,6 +23,7 @@ class CampaignSeeder extends Seeder
                             'id' => 'full_name',
                             'required' => true,
                             'type' => 'input[type=text]',
+                            'label' => 'Full Name',
                             'validation' => [
                                 'min' => 1,
                                 'max' => 128,
