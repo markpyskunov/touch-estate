@@ -70,9 +70,4 @@ const router = createRouter({
   routes
 })
 
-// Add navigation guard for debugging
-router.beforeEach((to, from, next) => {
-  next()
-})
-
 export default router

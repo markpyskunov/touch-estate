@@ -46,7 +46,7 @@ class LandingPageController extends Controller
 
         Cache::put("visitor_session.{$sid}", [
             'access_code' => $accessCode,
-        ], ttl: now()->addMinutes(10));
+        ], ttl: now()->addMinutes(30));
 
         $params = [
             'property' => $locationId,
@@ -54,6 +54,9 @@ class LandingPageController extends Controller
             'access_code' => $accessCode,
             'force' => $request->query->getBoolean('force'),
         ];
+        if (!$params['force']) {
+            unset($params['force']);
+        }
         return redirect(
             config('app.url') . '/real-estate/visit?' . http_build_query($params),
         );

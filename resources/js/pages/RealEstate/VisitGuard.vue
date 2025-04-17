@@ -117,15 +117,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {useVisitStore, VisitVerification} from '@/stores/visit'
-import {Property} from "@/contracts/properties";
-import { useLoadingStore } from '@/stores/loading'
-import axios from 'axios';
+import {useVisitStore} from '@/stores/visit'
+import {useLoadingStore} from "@/stores/loading";
 
 const route = useRoute()
 const router = useRouter()
-const loadingStore = useLoadingStore()
 const visitStore = useVisitStore()
+const loadingStore = useLoadingStore()
 
 // Get campaign and property IDs from URL
 const propertyId = route.query['property'] as string
@@ -155,35 +153,30 @@ const fetchData = async () => {
   if (!propertyId) return
 
   try {
-      loadingStore.show()
+      loadingStore.show();
+    await visitStore.fetchProperty(
+      propertyId,
+      route.query['sid'] as string,
+      route.query['access_code'] as string
+    )
 
-    const { data: propertyResponse } = await axios.get<Property>(`/api/v1/visitors/properties/${propertyId}`, {
-      params: {
-        property_id: propertyId,
-        sid: route.query['sid'],
-        access_code: route.query['access_code'],
+      if (!visitStore.property) {
+          throw new Error('Something went wrong - code 1');
       }
-    });
-    visitStore.property = propertyResponse;
 
-    const { data: visitVerificationResponse } = await axios.get<VisitVerification>(`/api/v1/visitors/verify-visit/${visitStore.visitorId}/${propertyId}/${visitStore.property.campaign.id}`, {
-        params: {
-            force,
-        }
-    });
+    await visitStore.checkVerificationStatus(propertyId, force)
 
-      visitStore.visitVerification = visitVerificationResponse;
-
-      if (visitStore.visitVerification.is_verified) {
-          router.push({
-              path: `/real-estate/property/${propertyId}`,
-              query: {
-                  campaign: visitStore.property.campaign.id,
-                  property: propertyId
-              }
-          });
-          return;
+      if (!visitStore.visitVerification) {
+          throw new Error('Something went wrong - code 2');
       }
+
+      console.log('visitStore.visitVerification', visitStore.visitVerification)
+    if (visitStore.visitVerification.is_verified) {
+      router.push({
+        path: `/real-estate/property/${propertyId}`
+      });
+      return;
+    }
 
     // Set default auth method based on available options
     if (visitStore.property.campaign.payload.flags.use_email_login) {
@@ -203,29 +196,25 @@ const submitForm = async () => {
   if (!isFormValid.value) return
   if (!visitStore.property) return
 
-  loading.value = true
-
   try {
-      await axios.post<VisitVerification>(`/api/v1/visitors/verify-visit/${visitStore.visitorId}/${propertyId}/${visitStore.property.campaign.id}`, {
-          type: visitStore.authMethod,
-          contact: visitStore.authMethod === 'email'
-              ? form.value.email
-              : form.value.phone,
-          name: form.value.name,
-      });
+    await visitStore.sendVerificationCode({
+      name: form.value.name,
+      ...(visitStore.authMethod === 'email'
+          ? { email: form.value.email }
+          : { phone: form.value.phone })
+    })
 
-    // Redirect to verification page
     router.push({
       path: '/real-estate/verify',
       query: {
         campaign: visitStore.property.campaign.id,
-        property: propertyId
+        sid: route.query['sid'],
+        access_code: route.query['access_code']
       }
     })
   } catch (error) {
     console.error('Error submitting form:', error)
-  } finally {
-    loading.value = false
+    // Handle error appropriately
   }
 }
 

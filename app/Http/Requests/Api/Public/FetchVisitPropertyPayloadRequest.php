@@ -18,8 +18,6 @@ class FetchVisitPropertyPayloadRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'property_id' => ['required', 'string'],
-        ];
+        return [];
     }
 }

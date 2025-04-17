@@ -31,8 +31,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import {useVisitStore, VisitVerification} from '@/stores/visit'
-import axios from "axios";
+import {useVisitStore} from '@/stores/visit'
 
 const router = useRouter()
 const visitStore = useVisitStore()
@@ -68,18 +67,19 @@ const submitForm = async () => {
   isSubmitting.value = true
 
   try {
-    await axios.patch<VisitVerification>(`/api/v1/visitors/verify-visit/${visitStore.visitorId}/${visitStore.property.id}/${visitStore.property.campaign.id}`, {
-        code: verificationCode.value,
-    });
+    await visitStore.verifyCode(verificationCode.value)
 
-    // Redirect to the property page with campaign ID
     router.push({
       path: `/real-estate/property/${visitStore.property.id}`,
+      query: {
+        campaign: visitStore.property.campaign.id,
+        sid: router.currentRoute.value.query['sid'],
+        access_code: router.currentRoute.value.query['access_code']
+      }
     })
   } catch (error) {
-    console.error('Error submitting form:', error)
-    // Show error to user
-    alert('Verification failed. Please try again.')
+    console.error('Error verifying code:', error)
+    // Handle error appropriately
   } finally {
     isSubmitting.value = false
   }
