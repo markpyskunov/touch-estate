@@ -27,6 +27,7 @@ export const useVisitStore = defineStore('visit', () => {
   const authMethod = ref<AuthMethod>('email');
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const collectedData = ref<Record<string, string>>({});
 
   async function fetchProperty(propertyId: string, sid: string, accessCode: string) {
     loading.value = true;
@@ -51,12 +52,12 @@ export const useVisitStore = defineStore('visit', () => {
   }
 
     async function checkVerificationStatus(propertyId: string, force: boolean = false) {
-        loading.value = true;
-        error.value = null;
-
         try {
+            loading.value = true;
+            error.value = null;
+
             if (!property.value) {
-                throw new Error('Property must be fetched fisrt');
+                throw new Error('Property must be fetched first');
             }
 
             const { data } = await axios.get<VisitVerification>(`/api/v1/visitors/verify-visit/${visitorId.value}/${propertyId}/${property.value.campaign.id}`, {
@@ -74,10 +75,11 @@ export const useVisitStore = defineStore('visit', () => {
     }
 
   async function sendVerificationCode(data: Record<string, string>) {
-    loading.value = true;
-    error.value = null;
-
     try {
+        loading.value = true;
+        error.value = null;
+        collectedData.value = data;
+
         if (!property.value) {
             throw new Error('Property must be fetched fisrt');
         }
@@ -95,16 +97,17 @@ export const useVisitStore = defineStore('visit', () => {
   }
 
   async function verifyCode(code: string) {
-    loading.value = true;
-    error.value = null;
-
     try {
+        loading.value = true;
+        error.value = null;
+
         if (!property.value) {
             throw new Error('Property must be fetched fisrt');
         }
 
       const { data } = await axios.patch<VisitVerification>(`/api/v1/visitors/verify-visit/${visitorId.value}/${property.value.id}/${property.value.campaign.id}`, {
         code,
+          ...collectedData.value,
       });
 
       visitVerification.value = data;

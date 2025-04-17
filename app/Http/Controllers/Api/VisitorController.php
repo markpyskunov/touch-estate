@@ -75,49 +75,6 @@ class VisitorController extends Controller
             ], 417);
         }
 
-        $visitor = Visitor::find($request->route('visitor')) ?? new Visitor();
-        $campaign = Campaign::findOrFail($request->route('campaign'));
-
-        $existingData = $visitor->collected_data ?? [];
-        $campaignFields = $campaign->payload['fields'];
-
-        $data = $existingData;
-        foreach ($campaignFields as $field) {
-            $fieldId = $field['id'];
-            if ($field['required'] && $request->missing($fieldId)) {
-                throw new \RuntimeException("Failed to collect required field {$fieldId}");
-            }
-
-            $data[$fieldId] = $request->input($fieldId);
-        }
-
-        // Handle email and phone separately to maintain history
-        if ($request->has('email')) {
-            $data['emails'] = array_unique(
-                array_filter(
-                    array_merge(
-                        $data['emails'] ?? [],
-                        [$request->input('email')]
-                    )
-                )
-            );
-        }
-
-        if ($request->has('phone')) {
-            $data['phones'] = array_unique(
-                array_filter(
-                    array_merge(
-                        $data['phones'] ?? [],
-                        [$request->input('phone')]
-                    )
-                )
-            );
-        }
-
-        // Update visitor data
-        $visitor->collected_data = $data;
-        $visitor->save();
-
         // Generate verification code
         $visitData['code'] = '000000';
 
@@ -146,6 +103,49 @@ class VisitorController extends Controller
 
         if ($visitData['code'] === $request->input('code')) {
             $visitData['is_verified'] = true;
+
+            $visitor = Visitor::find($request->route('visitor')) ?? new Visitor();
+            $campaign = Campaign::findOrFail($request->route('campaign'));
+
+            $existingData = $visitor->collected_data ?? [];
+            $campaignFields = $campaign->payload['fields'];
+
+            $data = $existingData;
+            foreach ($campaignFields as $field) {
+                $fieldId = $field['id'];
+                if ($field['required'] && $request->missing($fieldId)) {
+                    throw new \RuntimeException("Failed to collect required field {$fieldId}");
+                }
+
+                $data[$fieldId] = $request->input($fieldId);
+            }
+
+            // Handle email and phone separately to maintain history
+            if ($request->has('email')) {
+                $data['emails'] = array_unique(
+                    array_filter(
+                        array_merge(
+                            $data['emails'] ?? [],
+                            [$request->input('email')]
+                        )
+                    )
+                );
+            }
+
+            if ($request->has('phone')) {
+                $data['phones'] = array_unique(
+                    array_filter(
+                        array_merge(
+                            $data['phones'] ?? [],
+                            [$request->input('phone')]
+                        )
+                    )
+                );
+            }
+
+            // Update visitor data
+            $visitor->collected_data = $data;
+            $visitor->save();
         } else {
             return response()->json([
                 'message' => 'wrong code',
