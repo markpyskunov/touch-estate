@@ -18,6 +18,7 @@ class LocationFactory extends Factory
             'address_id' => Address::factory(),
             'name' => "{$this->faker->buildingNumber} {$this->faker->streetName}, Langford, BC",
             'mls' => '000000',
+            'description' => $this->faker->sentence,
         ];
     }
 }

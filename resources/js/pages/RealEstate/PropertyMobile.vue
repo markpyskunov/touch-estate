@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-0 px-4" fluid>
+  <v-container class="py-0 px-4" fluid v-if="propertyMapperStore.mapped">
     <!-- Image Slider Section -->
     <div class="mx-n4">
       <v-carousel
@@ -495,13 +495,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 import { useRoute } from 'vue-router'
 import InteractiveMap from '@/components/InteractiveMap.vue'
+import {usePropertyMapperStore} from "@/stores/propertyMapper";
 
 // Reuse the same interfaces and data from Listing.vue
 const route = useRoute()
-const listingId = 1
+const propertyMapperStore = usePropertyMapperStore();
 
 const currentImageIndex = ref(0)
 

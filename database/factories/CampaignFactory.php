@@ -21,6 +21,7 @@ class CampaignFactory extends Factory
                         'id' => 'full_name',
                         'required' => true,
                         'type' => 'input[type=text]',
+                        'label' => 'Full name',
                         'validation' => [
                             'min' => 1,
                             'max' => 128,

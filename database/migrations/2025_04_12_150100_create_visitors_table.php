@@ -6,19 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('visitors', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('location_id')->constrained()->restrictOnDelete()->restrictOnUpdate();
+            $table->uuid('vid');
             $table->json('collected_data');
+            $table->json('visits');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['location_id', 'created_at']);
+            $table->index(['location_id', 'vid', 'created_at']);
+            $table->unique(['location_id', 'vid']);
         });
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-0 px-4" fluid>
+  <v-container class="py-0 px-4" fluid v-if="visitStore.property">
     <!-- Image Slider Section -->
     <div class="mx-n4">
       <v-carousel
@@ -9,11 +9,11 @@
         show-arrows="hover"
       >
         <v-carousel-item
-          v-for="(image, index) in allImages"
+          v-for="(image, index) in visitStore.property.location_images ?? []"
           :key="index"
-          :src="image.url"
+          :src="image.source"
           cover
-        ></v-carousel-item>
+        />
       </v-carousel>
     </div>
 
@@ -37,13 +37,25 @@
           <!-- Left Column - Price and Details -->
           <div class="d-flex flex-column">
             <div>
-              <div class="text-h3 text-primary font-weight-medium">${{ listing.price }}</div>
-              <div class="text-h5 mt-2">{{ listing.address }}</div>
-              <div class="text-h6 text-grey">{{ listing.city }}, {{ listing.province }} {{ listing.postalCode }}</div>
+                <div class="d-flex flex-column" v-if="visitStore.property.pricing.price_before && visitStore.property.pricing.price_after">
+                    <div class="text-h5 text-decoration-line-through text-disabled font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_before) }}</div>
+                    <div class="text-h3 text-primary font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_after) }}</div>
+                </div>
+
+                <div class="d-flex" v-else-if="visitStore.property.pricing.price_before && !visitStore.property.pricing.price_after">
+                    <div class="text-h3 text-primary font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_before) }}</div>
+                </div>
+
+                <div class="d-flex" v-else>
+                    <div class="text-h3 text-primary font-weight-medium">Coming soon...</div>
+                </div>
+
+              <div class="text-h5 mt-2">{{ visitStore.property.address.street_number }} {{ visitStore.property.address.route }}</div>
+              <div class="text-h6 text-grey">{{ visitStore.property.address.administrative_area_level_2 }}, {{ visitStore.property.address.administrative_area_level_1 }}, {{ visitStore.property.address.postal_code }}</div>
 
               <div class="d-flex align-center mt-2">
                 <span class="text-grey me-2">MLS® Number:</span>
-                <span>995201</span>
+                <span>{{ visitStore.property.mls }}</span>
               </div>
 
               <v-btn
@@ -63,13 +75,25 @@
             <!-- Top Buttons -->
             <div class="d-flex justify-end">
               <v-btn
-                variant="outlined"
+                :variant="visitStore.property.is_favorite ? 'flat' : 'outlined'"
                 density="comfortable"
                 class="text-none"
                 color="error"
                 prepend-icon="mdi-heart-outline"
+                @click="async () => {
+                    if (!loadingStore) return;
+
+                    try {
+                        loadingStore.show('Processing favourites');
+                        await visitStore.toggleFavorite();
+                    } catch (err) {
+                        console.error(err)
+                    } finally {
+                      loadingStore.hide();
+                    }
+                }"
               >
-                Favourite
+                {{ visitStore.property.is_favorite ? 'Remove from Favourites' : 'Add to Favourites' }}
               </v-btn>
             </div>
 
@@ -77,25 +101,45 @@
             <div class="d-flex justify-space-between" style="width: 100%; gap: 24px;">
               <div class="text-center">
                 <v-icon size="28">mdi-bed</v-icon>
-                <div class="text-subtitle-1 font-weight-medium">4</div>
+                <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.rooms.filter(r => r.type === 'bedroom').length }}</div>
                 <div class="text-caption text-grey">Bedrooms</div>
               </div>
               <div class="text-center">
                 <v-icon size="28">mdi-shower</v-icon>
-                <div class="text-subtitle-1 font-weight-medium">3</div>
+                <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.rooms.filter(r => r.type === 'bathroom').length }}</div>
                 <div class="text-caption text-grey">Bathrooms</div>
               </div>
-              <div class="text-center">
+              <div class="text-center" v-if="visitStore.property.area_sqft">
                 <v-icon size="28">mdi-ruler-square</v-icon>
-                <div class="text-subtitle-1 font-weight-medium">3033</div>
+                <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.area_sqft }}</div>
                 <div class="text-caption text-grey">Square Feet</div>
               </div>
-              <div class="text-center">
-                <v-tooltip text="2 Garage + 1 Parking" location="top">
-                  <template v-slot:activator="{ props }">
+              <div class="text-center" v-if="visitStore.property.rooms.filter(r => r.type === 'parking').length || visitStore.property.rooms.filter(r => r.type === 'garage').length">
+                <v-tooltip :text="[
+                    visitStore.property.rooms.filter(r => r.type === 'parking').length
+                        ? `${visitStore.property.rooms.filter(r => r.type === 'parking').length} Parking lot${visitStore.property.rooms.filter(r => r.type === 'parking').length > 1 ? 's' : ''}`
+                        : null,
+                    visitStore.property.rooms.filter(r => r.type === 'garage').length
+                        ? `${visitStore.property.rooms.filter(r => r.type === 'garage').length} Garage`
+                        : null,
+                ].filter(r => !!r).join(' + ')" location="top">
+                  <template #activator="{ props }">
                     <div v-bind="props">
                       <v-icon size="28">mdi-garage</v-icon>
-                      <div class="text-subtitle-1 font-weight-medium">2+1</div>
+                      <div
+                          class="text-subtitle-1 font-weight-medium"
+                          v-if="visitStore.property.rooms.filter(r => r.type === 'parking').length && visitStore.property.rooms.filter(r => r.type === 'garage').length"
+                      >
+                          {{ visitStore.property.rooms.filter(r => r.type === 'parking').length }} + {{ visitStore.property.rooms.filter(r => r.type === 'garage').length }}
+                      </div>
+
+                        <div
+                            class="text-subtitle-1 font-weight-medium"
+                            v-else-if="visitStore.property.rooms.filter(r => r.type === 'parking').length && !visitStore.property.rooms.filter(r => r.type === 'garage').length"
+                        >
+                            {{ visitStore.property.rooms.filter(r => r.type === 'parking').length }}
+                        </div>
+
                       <div class="text-caption text-grey">Parking</div>
                     </div>
                   </template>
@@ -112,33 +156,35 @@
       <!-- Left Column - Property Details -->
       <v-col cols="12" md="8">
         <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
-          <v-card-title class="text-h4">{{ listing.title }}</v-card-title>
-          <v-card-subtitle class="text-h6">{{ listing.address }}</v-card-subtitle>
+          <v-card-title class="text-h4">Main information</v-card-title>
+          <v-card-subtitle class="text-h6">{{ visitStore.property.address.formatted_address }}</v-card-subtitle>
 
-          <v-card-text>
+          <v-card-text v-if="visitStore.property.description">
             <div class="text-h6 mb-4">Description</div>
-            <p class="text-body-1">{{ listing.description }}</p>
+            <p class="text-body-1">{{ visitStore.property.description }}</p>
           </v-card-text>
 
           <v-card-text>
             <div class="text-h6 mb-4">Features</div>
             <v-chip
-              v-for="(feature, index) in listing.features"
+              v-for="(feature, index) in activeFeatures"
               :key="index"
               class="ma-2"
               color="primary"
               variant="outlined"
             >
-              {{ feature }}
+                <span v-if="typeof feature.value === 'boolean'">{{ feature.feature }}</span>
+                <span v-else-if="typeof feature.value === 'number'">{{ feature.feature }}: {{ feature.value }}</span>
+                <span v-else-if="typeof feature.value === 'string'">{{ feature.feature }}: {{ feature.value }}</span>
             </v-chip>
           </v-card-text>
         </v-card>
 
         <!-- Additional Images -->
         <v-row class="mb-6">
-          <v-col cols="6" v-for="(image, index) in listing.images" :key="index">
+          <v-col cols="6" v-for="(image, index) in visitStore.property.location_images.filter(i => i.is_featured)" :key="index">
             <v-img
-              :src="image.url"
+              :src="image.source"
               height="200"
               cover
               class="rounded"
@@ -166,7 +212,7 @@
                 inset
                 class="mt-0 pt-0"
                 style="margin-top: -8px !important"
-              ></v-switch>
+              />
               <span
                 class="text-caption ms-2 d-flex align-center"
                 style="line-height: 1"
@@ -192,15 +238,15 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="room in rooms" :key="room.id">
+                <tr v-for="room in visitStore.property.rooms" :key="room.id">
                   <td style="width: 120px">
                     <div class="d-flex align-center">
                       <v-icon size="20" class="me-2">{{ getLevelIcon(room.level) }}</v-icon>
-                      {{ room.level }}
+                      {{ getLevelLabel(room.level) }}
                     </div>
                   </td>
                   <td style="width: 200px">{{ room.name }}</td>
-                  <td style="width: 150px">{{ formatDimensions(room.dimensions) }}</td>
+                  <td style="width: 150px">{{ printRoomSize(room) }}</td>
                 </tr>
               </tbody>
             </v-table>
@@ -215,18 +261,18 @@
           <v-card-text class="py-4">
             <div class="d-flex align-center justify-space-between mb-4">
               <div class="d-flex flex-column align-center justify-center" style="width: 100%">
-                <div class="text-h5 font-weight-medium text-primary mb-1">324</div>
+                <div class="text-h5 font-weight-medium text-primary mb-1">{{ visitStore.property.stats.visitors }}</div>
                 <div class="text-caption text-grey">Views</div>
               </div>
               <v-divider vertical></v-divider>
               <div class="d-flex flex-column align-center justify-center" style="width: 100%">
-                <div class="text-h5 font-weight-medium text-error mb-1">45</div>
+                <div class="text-h5 font-weight-medium text-error mb-1">{{ visitStore.property.stats.favorites }}</div>
                 <div class="text-caption text-grey">Favorites</div>
               </div>
               <v-divider vertical></v-divider>
               <div class="d-flex flex-column align-center justify-center" style="width: 100%">
                 <v-tooltip text="High demand on watching this property" location="bottom">
-                  <template v-slot:activator="{ props }">
+                  <template #activator="{ props }">
                     <v-icon
                       v-bind="props"
                       color="warning"
@@ -279,24 +325,24 @@
             <p class="text-body-2 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
 
             <!-- Previous Notes -->
-            <div v-if="previousNotes.length > 0" class="mb-6">
+            <div v-if="visitStore.property.notes.length > 0" class="mb-6">
               <div class="text-subtitle-1 mb-3">Your Notes</div>
               <v-timeline density="compact" align="start">
                 <v-timeline-item
-                  v-for="note in previousNotes"
+                  v-for="note in visitStore.property.notes"
                   :key="note.id"
                   dot-color="primary"
                   size="small"
                 >
-                  <div class="text-caption text-grey mb-1">{{ formatDate(note.timestamp) }}</div>
-                  <div class="text-body-2">{{ note.content }}</div>
+                  <div class="text-caption text-grey mb-1">{{ formatDate(new Date(note.created_at)) }}</div>
+                  <div class="text-body-2">{{ note.note }}</div>
                 </v-timeline-item>
               </v-timeline>
             </div>
 
-            <v-form @submit.prevent="subscribeToProperty">
+            <v-form @submit.prevent="propertyMapperStore.subscribeToProperty">
               <v-textarea
-                v-model="subscribeForm.personalNote"
+                v-model="propertyMapperStore.subscribeForm.personalNote"
                 label="Add New Note"
                 placeholder="Add a note about this property..."
                 variant="outlined"
@@ -328,19 +374,19 @@
                 size="small"
                 class="font-weight-regular"
               >
-                {{ visits.length }} visits
+                {{ `${visitStore.property.visits.length} visit${visitStore.property.visits.length > 1 ? 's' : ''}` }}
               </v-chip>
             </div>
 
-            <div class="visits-timeline" style="max-height: 500px; overflow-y: auto;">
+            <div class="visits-timeline" style="max-height: 200px; overflow-y: auto;">
               <v-timeline density="compact" align="start">
                 <v-timeline-item
-                  v-for="visit in visits"
+                  v-for="visit in visitStore.property.visits"
                   :key="visit.id"
                   :dot-color="visit.type === 'nfc' ? 'primary' : visit.type === 'qr' ? 'success' : 'info'"
                   size="small"
                 >
-                  <div class="text-caption text-grey mb-1">{{ formatVisitDate(visit.timestamp) }}</div>
+                  <div class="text-caption text-grey mb-1">{{ formatDate(visit.created_at) }}</div>
                   <div class="d-flex align-center">
                     <v-icon
                       size="16"
@@ -377,26 +423,26 @@
           size="small"
           class="font-weight-regular"
         >
-          {{ documents.length }} files
+          {{ visitStore.property.documents.length }} files
         </v-chip>
       </v-card-title>
 
       <v-card-text>
         <v-list density="compact">
           <v-list-item
-            v-for="doc in documents"
+            v-for="doc in visitStore.property.documents"
             :key="doc.id"
             :href="doc.url"
             target="_blank"
             class="px-2"
           >
-            <template v-slot:prepend>
-              <v-icon :color="doc.iconColor" size="20" class="me-2">{{ doc.icon }}</v-icon>
+            <template #prepend>
+              <v-icon :color="doc.icon_color" size="20" class="me-2">{{ doc.icon }}</v-icon>
             </template>
 
             <v-list-item-title class="text-body-2">{{ doc.name }}</v-list-item-title>
 
-            <template v-slot:append>
+            <template #append>
               <v-chip
                 size="x-small"
                 color="grey"
@@ -439,7 +485,7 @@
               :ticks="[10, 20, 30, 40]"
               show-ticks="always"
             >
-              <template v-slot:append>
+              <template #append>
                 <v-text-field
                   v-model="calculatorSettings.downPayment"
                   type="number"
@@ -465,7 +511,7 @@
               :ticks="[2, 4, 6, 8]"
               show-ticks="always"
             >
-              <template v-slot:append>
+              <template #append>
                 <v-text-field
                   v-model="calculatorSettings.interestRate"
                   type="number"
@@ -491,7 +537,7 @@
               :ticks="[10, 15, 20, 25]"
               show-ticks="always"
             >
-              <template v-slot:append>
+              <template #append>
                 <v-text-field
                   v-model="calculatorSettings.amortizationYears"
                   type="number"
@@ -513,7 +559,7 @@
             <div class="pa-4 bg-grey-lighten-4 rounded d-flex flex-column" style="width: 100%">
               <div class="d-flex justify-space-between mb-2">
                 <span class="text-body-2">Property Price</span>
-                <span class="text-body-2">${{ listing.price }}</span>
+                <span class="text-body-2">{{ formatCurrency(finalPrice) }}</span>
               </div>
               <div class="d-flex justify-space-between mb-2">
                 <span class="text-body-2">Down Payment ({{ calculatorSettings.downPayment }}%)</span>
@@ -536,13 +582,13 @@
               <div class="text-subtitle-1 mb-3">Additional Monthly Costs</div>
               <div class="d-flex justify-space-between mb-2">
                 <span class="text-body-2">Property Taxes</span>
-                <span class="text-body-2">${{ propertyTaxes }}/month</span>
+                <span class="text-body-2">${{ calculatorSettings.propertyTaxes }}/month</span>
               </div>
               <div class="d-flex justify-space-between mb-2">
                 <div class="d-flex align-center">
                   <span class="text-body-2">Maintenance Fees</span>
                   <v-tooltip text="Building maintenance / Condo fees" location="right">
-                    <template v-slot:activator="{ props }">
+                    <template #activator="{ props }">
                       <v-icon
                         v-bind="props"
                         size="16"
@@ -554,7 +600,7 @@
                     </template>
                   </v-tooltip>
                 </div>
-                <span class="text-body-2">${{ maintenanceFees }}/month</span>
+                <span class="text-body-2">${{ propertyMapperStore.calculatorSettings.maintenanceFees }}/month</span>
               </div>
               <v-divider class="my-2"></v-divider>
               <div class="d-flex justify-space-between mt-auto">
@@ -576,7 +622,7 @@
             <div class="map-container">
               <v-card class="map-card">
                 <InteractiveMap
-                  :center="coordinates"
+                  :center="{ lat: visitStore.property.address.latitude, lng: visitStore.property.address.longitude }"
                   :zoom="15"
                 />
               </v-card>
@@ -589,351 +635,130 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
-import { useLoadingStore } from '@/stores/loading'
 import InteractiveMap from '@/components/InteractiveMap.vue'
+import {useVisitStore} from "@/stores/visit";
+import {formatCurrency, formatDate} from "@/shared/helpers";
+import {usePropertyMapperStore} from "@/stores/propertyMapper";
+import {computed, ref} from "vue";
+import {LocationRoom} from "@/contracts/properties";
+import {useLoadingStore} from "@/stores/loading";
+import {fi} from "vuetify/locale";
 
-interface SubscribeForm {
-  personalNote: string
+const useMetric = ref(false);
+
+const visitStore = useVisitStore();
+const loadingStore = useLoadingStore();
+const propertyMapperStore = usePropertyMapperStore();
+propertyMapperStore.injectProperty(visitStore.property);
+
+const getLevelIcon = (level: number): string => {
+    switch (level) {
+        case -2:
+            return 'mdi-home-negative-1'
+        case -1:
+            return 'mdi-home-floor-l'
+        case 1:
+            return 'mdi-home-floor-1'
+        case 2:
+            return 'mdi-home-floor-2'
+        case 3:
+            return 'mdi-home-floor-3'
+        case 4:
+            return 'mdi-home-floor-4'
+        case 0:
+            return 'mdi-home-floor-b'
+        default:
+            return 'mdi-home-floor-1'
+    }
 }
 
-interface Note {
-  id: number
-  content: string
-  timestamp: Date
+const getLevelLabel = (level: number): string => {
+    switch (level) {
+        case -2:
+            return 'Underground 2'
+        case -1:
+            return 'Underground'
+        case 1:
+            return '1st floor'
+        case 2:
+            return '2nd floor'
+        case 3:
+            return '3rd floor'
+        case 4:
+            return '4th floor'
+        case 0:
+            return 'basement'
+        default:
+            return '1st floor'
+    }
 }
 
-interface RoomDimensions {
-  width: number
-  length: number
+const printRoomSize = (room: LocationRoom) => {
+    if (!useMetric.value) {
+        return `${room.width_ft} x ${room.length_ft}`
+    }
+
+    return `${room.width_meters} x ${room.length_meters}`
 }
-
-interface Room {
-  id: number
-  level: string
-  name: string
-  dimensions: RoomDimensions
-}
-
-interface Document {
-  id: number
-  name: string
-  url: string
-  size: string
-  icon: string
-  iconColor: string
-}
-
-interface Visit {
-  id: number
-  visitorName: string
-  timestamp: Date
-  type: 'nfc' | 'qr' | 'website'
-}
-
-const listing = ref({
-  title: 'Main information',
-  price: '1,225,000',
-  address: '1110 Samar Cres',
-  city: 'Langford',
-  province: 'British Columbia',
-  postalCode: 'V9B 0A1',
-  mainImage: '/images/properties/bathroom.jpg',
-  images: [
-    { url: '/images/properties/living-room-1.jpg' },
-    { url: '/images/properties/kitchen-1.jpg' },
-    { url: '/images/properties/bedroom-1.jpg' },
-    { url: '/images/properties/bathroom.jpg' }
-  ],
-  additionalImages: [
-    { url: '/images/properties/living-room-2.jpg', title: 'Living Room' },
-    { url: '/images/properties/kitchen-2.jpg', title: 'Kitchen' },
-    { url: '/images/properties/bedroom-2.jpg', title: 'Bedroom' },
-  ],
-  description: 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
-  features: [
-    'Modern Kitchen',
-    'Hardwood Floors',
-    'Fireplace',
-    'Central Air',
-    'Large Backyard',
-    'Updated Bathrooms',
-    'Walk-in Closets',
-    'Energy Efficient',
-  ],
-  bedrooms: 4,
-  bathrooms: 3,
-  area: 2500,
-  mlsNumber: '995201',
-})
-
-const subscribeForm = ref<SubscribeForm>({
-  personalNote: ''
-})
-
-// Combine all images for the carousel
-const allImages = ref([
-  {
-    url: '/images/properties/bathroom.jpg',
-    title: 'Front View'
-  },
-  {
-    url: '/images/properties/living-room-1.jpg',
-    title: 'Living Room'
-  },
-  {
-    url: '/images/properties/kitchen-1.jpg',
-    title: 'Kitchen'
-  },
-  {
-    url: '/images/properties/bedroom-1.jpg',
-    title: 'Bedroom'
-  },
-  {
-    url: '/images/properties/bathroom.jpg',
-    title: 'Bathroom'
-  }
-])
-
-// Mock data for previous notes
-const previousNotes = ref<Note[]>([
-  {
-    id: 1,
-    content: "Great location, close to schools and parks. Need to check the garage size.",
-    timestamp: new Date('2024-03-15T14:30:00')
-  },
-  {
-    id: 2,
-    content: "Called agent about the roof age - was replaced in 2020.",
-    timestamp: new Date('2024-03-16T09:15:00')
-  }
-])
-
-const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric'
-  }).format(date)
-}
-
-const subscribeToProperty = () => {
-  // We'll get email from Pinia state here
-  console.log('Subscription submitted:', subscribeForm.value)
-}
-
-const useMetric = ref(true)
-
-const rooms = ref<Room[]>([
-  {
-    id: 1,
-    level: 'Main Floor',
-    name: 'Living Room',
-    dimensions: { width: 6.1, length: 7.3 }
-  },
-  {
-    id: 2,
-    level: 'Main Floor',
-    name: 'Kitchen',
-    dimensions: { width: 4.2, length: 5.5 }
-  },
-  {
-    id: 3,
-    level: 'Main Floor',
-    name: 'Dining Room',
-    dimensions: { width: 3.9, length: 4.8 }
-  },
-  {
-    id: 4,
-    level: 'Upper Floor',
-    name: 'Master Bedroom',
-    dimensions: { width: 4.5, length: 5.8 }
-  },
-  {
-    id: 5,
-    level: 'Upper Floor',
-    name: 'Bedroom 2',
-    dimensions: { width: 3.6, length: 4.2 }
-  },
-  {
-    id: 6,
-    level: 'Upper Floor',
-    name: 'Family Bathroom',
-    dimensions: { width: 2.8, length: 3.2 }
-  },
-  {
-    id: 7,
-    level: 'Third Floor',
-    name: 'Bedroom 3',
-    dimensions: { width: 3.3, length: 4.0 }
-  },
-  {
-    id: 8,
-    level: 'Third Floor',
-    name: 'Study Room',
-    dimensions: { width: 3.0, length: 3.5 }
-  },
-  {
-    id: 9,
-    level: 'Third Floor',
-    name: 'Half Bath',
-    dimensions: { width: 1.8, length: 2.4 }
-  }
-])
-
-const formatDimensions = (dimensions: RoomDimensions): string => {
-  if (useMetric.value) {
-    return `${dimensions.width.toFixed(1)}m × ${dimensions.length.toFixed(1)}m`
-  } else {
-    // Convert to feet (1m = 3.28084ft)
-    const widthFt = dimensions.width * 3.28084
-    const lengthFt = dimensions.length * 3.28084
-    return `${widthFt.toFixed(1)}ft × ${lengthFt.toFixed(1)}ft`
-  }
-}
-
-const getLevelIcon = (level: string): string => {
-  switch (level) {
-    case 'Main Floor':
-      return 'mdi-home-floor-1'
-    case 'Upper Floor':
-      return 'mdi-home-floor-2'
-    case 'Third Floor':
-      return 'mdi-home-floor-3'
-    case 'Basement':
-      return 'mdi-home-floor-b'
-    default:
-      return 'mdi-home-floor-1'
-  }
-}
-
-const documents = ref<Document[]>([
-  {
-    id: 1,
-    name: 'Property Disclosure Statement.pdf',
-    url: '#',
-    size: '2.4 MB',
-    icon: 'mdi-file-document-outline',
-    iconColor: 'primary'
-  },
-  {
-    id: 2,
-    name: 'Floor Plans.pdf',
-    url: '#',
-    size: '5.1 MB',
-    icon: 'mdi-floor-plan',
-    iconColor: 'success'
-  },
-  {
-    id: 3,
-    name: 'Property Survey.pdf',
-    url: '#',
-    size: '3.8 MB',
-    icon: 'mdi-map-outline',
-    iconColor: 'info'
-  },
-  {
-    id: 4,
-    name: 'Title Certificate.pdf',
-    url: '#',
-    size: '1.2 MB',
-    icon: 'mdi-certificate-outline',
-    iconColor: 'warning'
-  }
-])
-
-const visits = ref<Visit[]>([
-  {
-    id: 1,
-    visitorName: 'John D.',
-    timestamp: new Date('2024-03-20T14:30:00'),
-    type: 'nfc'
-  },
-  {
-    id: 2,
-    visitorName: 'Sarah M.',
-    timestamp: new Date('2024-03-20T11:15:00'),
-    type: 'website'
-  },
-  {
-    id: 3,
-    visitorName: 'Mike R.',
-    timestamp: new Date('2024-03-19T16:45:00'),
-    type: 'qr'
-  },
-  {
-    id: 4,
-    visitorName: 'Emma L.',
-    timestamp: new Date('2024-03-19T13:20:00'),
-    type: 'website'
-  }
-])
-
-const formatVisitDate = (date: Date): string => {
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-
-  if (hours < 24) {
-    return `${hours}h ago`
-  } else {
-    return formatDate(date)
-  }
-}
-
-const calculatorSettings = ref({
-  downPayment: 10,
-  interestRate: 4.00,
-  amortizationYears: 25
-})
-
-const propertyTaxes = 450
-const maintenanceFees = 350
 
 const calculateDownPayment = (percentage: number): string => {
-  const price = parseFloat(listing.value.price.replace(/,/g, ''))
-  return (price * (percentage / 100)).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return (finalPrice.value / 100 * (percentage / 100)).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 const calculateLoanAmount = (downPaymentPercentage: number): string => {
-  const price = parseFloat(listing.value.price.replace(/,/g, ''))
-  const downPayment = price * (downPaymentPercentage / 100)
-  return (price - downPayment).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    const downPayment = finalPrice.value / 100 * (downPaymentPercentage / 100)
+    return (finalPrice.value / 100 - downPayment).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 const calculateMonthlyPayment = (downPaymentPercentage: number): string => {
-  const price = parseFloat(listing.value.price.replace(/,/g, ''))
-  const downPayment = price * (downPaymentPercentage / 100)
-  const loanAmount = price - downPayment
-  const monthlyRate = calculatorSettings.value.interestRate / 100 / 12
-  const numberOfPayments = calculatorSettings.value.amortizationYears * 12
+    const downPayment = finalPrice.value / 100 * (downPaymentPercentage / 100)
+    const loanAmount = finalPrice.value / 100 - downPayment
+    const monthlyRate = calculatorSettings.value.interestRate / 100 / 12
+    const numberOfPayments = calculatorSettings.value.amortizationYears * 12
 
-  const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-                        (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
+    const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
+        (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
 
-  return monthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return monthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 const calculateTotalMonthlyCost = (downPaymentPercentage: number): string => {
-  const monthlyPayment = parseFloat(calculateMonthlyPayment(downPaymentPercentage).replace(/,/g, ''))
-  const total = monthlyPayment + propertyTaxes + maintenanceFees
-  return total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    const monthlyPayment = parseFloat(calculateMonthlyPayment(downPaymentPercentage).replace(/,/g, ''))
+    const total = monthlyPayment + calculatorSettings.value.propertyTaxes + calculatorSettings.value.maintenanceFees
+    return total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-const loadingStore = useLoadingStore()
+const activeFeatures = computed(() => {
+    if (!visitStore.property) {
+        return [];
+    }
 
-// Replace the mapImage property with coordinates
-const coordinates = { lat: 48.44705905509525, lng: -123.54380246952951 }
+    return visitStore.property.features.filter(feature => {
+        if (typeof feature.value === 'boolean') {
+            return feature.value;
+        }
 
-onMounted(async () => {
-  loadingStore.show('Loading property details...')
-  try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-  } finally {
-    loadingStore.hide()
-  }
+        return true;
+    })
+})
+const finalPrice = computed(() => {
+    if (!visitStore.property) {
+        return 0;
+    }
+
+    if (visitStore.property.pricing.price_before && visitStore.property.pricing.price_after) {
+        return visitStore.property.pricing.price_after;
+    }
+
+    return visitStore.property.pricing.price_before;
+})
+
+const calculatorSettings = ref({
+    downPayment: 10,
+    interestRate: 4.00,
+    amortizationYears: 25,
+    propertyTaxes: 450,
+    maintenanceFees: 350,
 })
 </script>
 

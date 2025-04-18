@@ -3,7 +3,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import Home from '@/pages/Home.vue'
 import About from '@/pages/About.vue'
 import NotFound from '@/pages/NotFound.vue'
-import Listing from '@/pages/RealEstate/Listing.vue'
+import Property from '@/pages/RealEstate/Property.vue'
 import LandingPageLayout from "@/layouts/LandingPageLayout.vue";
 import VisitGuard from "@/pages/RealEstate/VisitGuard.vue";
 import VisitVerification from "@/pages/RealEstate/VisitVerification.vue";
@@ -22,12 +22,6 @@ const routes = [
         path: 'about',
         name: 'about',
         component: About
-      },
-      {
-        path: 'listing/:id',
-        name: 'listing',
-        component: Listing,
-        props: true
       },
       {
         path: ':pathMatch(.*)*',
@@ -52,8 +46,8 @@ const routes = [
             },
             {
                 path: 'property/:id',
-                name: 'listing',
-                component: Listing,
+                name: 'property.show',
+                component: Property,
                 props: true
             },
             {

@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasUUID;
 use App\Models\Traits\HasSorting;
+use Illuminate\Support\Collection;
 
 /**
  * @property string $id
  * @property string $address_id
  * @property string $company_id
+ * @property int|null $area_sqft
+ * @property string $description
  * @property string $name
  * @property string $mls
  * @property \Illuminate\Support\Carbon $created_at
@@ -23,15 +26,16 @@ use App\Models\Traits\HasSorting;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  *
  * @property-read \App\Models\Address $address
- * @property-read \App\Models\LocationImage $locationMainImage
- * @property-read \App\Models\LocationImage[] $locationImages
- * @property-read \App\Models\LocationFeature[] $locationFeatures
- * @property-read \App\Models\LocationPricing[] $locationPricings
- * @property-read \App\Models\LocationRoom[] $locationRooms
- * @property-read \App\Models\LocationMeta[] $locationMetas
- * @property-read \App\Models\NfcQrTag[] $nfcQrTags
+ * @property-read Collection<LocationImage> $locationImages
+ * @property-read Collection<LocationFeature> $locationFeatures
+ * @property-read Collection<\App\Models\LocationPricing> $locationPricings
+ * @property-read Collection<\App\Models\LocationRoom> $locationRooms
+ * @property-read Collection<\App\Models\LocationMeta> $locationMetas
+ * @property-read Collection<\App\Models\LocationDocument> $locationDocuments
+ * @property-read Collection<\App\Models\NfcQrTag> $nfcQrTags
  * @property-read null|\App\Models\Campaign $campaign
  * @property-read \App\Models\Company $company
+ * @property-read Collection<LocationNote> $locationNotes
  */
 class Location extends Model
 {
@@ -43,7 +47,8 @@ class Location extends Model
     protected $fillable = [
         'company_id',
         'address_id',
-        'location_image_id',
+        'area_sqft',
+        'description',
         'name',
         'mls',
     ];
@@ -104,34 +109,21 @@ class Location extends Model
         return $this->hasMany(NfcQrTag::class);
     }
 
-    protected function fullAddress(): Attribute
+    public function locationNotes(): HasMany
     {
-        return Attribute::make(
-            get: fn (): string => $this->address->full_address,
-        );
+        return $this->hasMany(LocationNote::class);
     }
 
-    protected function streetAddress(): Attribute
+    public function inVisitorFavorites(): BelongsToMany
     {
-        return Attribute::make(
-            get: fn (): string => $this->address->street_address,
-        );
+        return $this->belongsToMany(Visitor::class, 'visitors_favorite_locations');
     }
 
-    protected function cityStateZip(): Attribute
+    public function getStats(): array
     {
-        return Attribute::make(
-            get: fn (): string => $this->address->city_state_zip,
-        );
-    }
-
-    protected function coordinates(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): array => [
-                'latitude' => $this->address->latitude,
-                'longitude' => $this->address->longitude,
-            ],
-        );
+        return [
+            'visitors' => Visitor::query()->where('location_id', $this->id)->count(),
+            'favorites' => $this->inVisitorFavorites()->count(),
+        ];
     }
 }

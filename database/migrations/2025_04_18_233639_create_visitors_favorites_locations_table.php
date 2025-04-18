@@ -8,15 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('location_images', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        Schema::create('visitors_favorite_locations', function (Blueprint $table) {
             $table->foreignUuid('location_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->boolean('is_default')->default(false);
-            $table->boolean('is_featured')->default(false);
-            $table->text('source');
-            $table->string('title', 128);
-            $table->integer('order')->nullable();
-            $table->timestamps();
+            $table->foreignUuid('visitor_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+
+            $table->unique(['location_id', 'visitor_id']);
+            $table->index(['location_id']);
         });
     }
 

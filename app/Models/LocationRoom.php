@@ -2,24 +2,26 @@
 
 namespace App\Models;
 
+use App\Enums\RoomType;
 use App\Models\Traits\HasUUID;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property string $id
  * @property string $location_id
  * @property int $level
  * @property string $name
  * @property int $area_sqft
- * @property string $width_sqft
- * @property string $length_sqft
+ * @property string $width_ft
+ * @property string $length_ft
  * @property string $width_meters
  * @property string $length_meters
  *
- * @property-read array $imperial
- * @property-read array $metric
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
  * @property-read Location $location
  */
 class LocationRoom extends Model
@@ -29,33 +31,19 @@ class LocationRoom extends Model
 
     protected $fillable = [
         'location_id',
+        'type',
         'level',
         'name',
         'area_sqft',
-        'width_sqft',
-        'length_sqft',
+        'width_ft',
+        'length_ft',
         'width_meters',
         'length_meters',
     ];
 
-    protected $appends = [
-        'imperial',
-        'metric',
+    protected $casts = [
+        'type' => RoomType::class,
     ];
-
-    public function imperial(): Attribute
-    {
-        return new Attribute(
-            get: fn() => [ 'width' => $this->width_sqft, 'length' => $this->length_sqft ],
-        );
-    }
-
-    public function metric(): Attribute
-    {
-        return new Attribute(
-            get: fn() => [ 'width' => $this->width_meters, 'length' => $this->length_meters ],
-        );
-    }
 
     public function location(): BelongsTo
     {

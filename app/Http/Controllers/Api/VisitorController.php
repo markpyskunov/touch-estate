@@ -8,8 +8,10 @@ use App\Http\Resources\PropertyResource;
 use App\Models\Campaign;
 use App\Models\Location;
 use App\Models\Visitor;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Spatie\RouteAttributes\Attributes\Get;
 use Spatie\RouteAttributes\Attributes\Group;
@@ -21,28 +23,45 @@ use Spatie\RouteAttributes\Attributes\Post;
 #[Middleware(['guest'])]
 class VisitorController extends Controller
 {
-    #[Get('properties/{property}', name: 'fetchVisitPropertyPayload')]
+    #[Get('properties/{vid}/{property}', name: 'fetchVisitPropertyPayload')]
     public function fetchVisitPropertyPayload(FetchVisitPropertyPayloadRequest $request): JsonResponse
     {
-        $property = Location::with([
-            'address',
-            'locationImages',
-            'locationFeatures',
-            'locationPricings',
-            'locationMetas',
-            'locationRooms',
-            'campaign',
-        ])->findOrFail($request->route('property'));
+        $visitor = Visitor::query()
+            ->where('location_id', $request->route('property'))
+            ->where('vid', $request->route('vid'))
+            ->first();
+        if ($visitor) {
+            $visits = $visitor->visits ?? [];
+
+            // Do not spam. Visit back >= 30 mins after prev = new visit
+            if (!empty($visits) && Carbon::parse(Arr::last($visits)['created_at'])->diffInMinutes(Carbon::now()) >= 30) {
+                /**
+                 * Types
+                 *
+                 * qr - if not type param
+                 * nfc - if the param is nfc
+                 * website - if the param is website
+                 */
+                $visits[] = [
+                    'created_at' => now()->format('Y-m-d H:i:s'),
+                    'type' => $request->input('utm_source', 'qr'),
+                ];
+                $visitor->visits = $visits;
+                $visitor->save();
+            }
+        }
 
         return response()->json(
-            PropertyResource::make($property)
+            PropertyResource::make(
+                $request->getProperty()
+            )
         );
     }
 
-    #[Get('verify-visit/{visitor}/{property}/{campaign}', name: 'verifyVisit')]
+    #[Get('verify-visit/{vid}/{property}/{campaign}', name: 'verifyVisit')]
     public function verifyVisit(Request $request): JsonResponse
     {
-        $visitKey = "visits.visitor_{$request->route('visitor')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
+        $visitKey = "visits.visitor_{$request->route('vid')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
         if ($request->query->getBoolean('force')) {
             Cache::forget($visitKey);
         }
@@ -64,10 +83,10 @@ class VisitorController extends Controller
         );
     }
 
-    #[Post('verify-visit/{visitor}/{property}/{campaign}', name: 'collectVerificationData')]
-    public function collectVerificationData(Request $request): JsonResponse
+    #[Post('verify-visit/{vid}/{property}/{campaign}', name: 'sendNotification')]
+    public function sendNotification(Request $request): JsonResponse
     {
-        $visitKey = "visits.visitor_{$request->route('visitor')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
+        $visitKey = "visits.visitor_{$request->route('vid')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
         $visitData = Cache::get($visitKey);
         if (!$visitData) {
             return response()->json([
@@ -90,10 +109,10 @@ class VisitorController extends Controller
         return response()->json($visitData);
     }
 
-    #[Patch('verify-visit/{visitor}/{property}/{campaign}', name: 'finishVerification')]
-    public function finishVerification(Request $request): JsonResponse
+    #[Patch('verify-visit/{vid}/{property}/{campaign}', name: 'verifyCodeAndCollectVerifiedData')]
+    public function verifyCodeAndCollectVerifiedData(Request $request): JsonResponse
     {
-        $visitKey = "visits.visitor_{$request->route('visitor')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
+        $visitKey = "visits.visitor_{$request->route('vid')}.property_{$request->route('property')}.campaign_{$request->route('campaign')}";
         $visitData = Cache::get($visitKey);
         if (!$visitData) {
             return response()->json([
@@ -104,8 +123,14 @@ class VisitorController extends Controller
         if ($visitData['code'] === $request->input('code')) {
             $visitData['is_verified'] = true;
 
-            $visitor = Visitor::find($request->route('visitor')) ?? new Visitor();
+            /** @var Visitor $visitor */
+            $visitor = Visitor::query()
+                ->where('vid', $request->route('vid'))
+                ->where('location_id', $request->route('property'))
+                ->first() ?? new Visitor();
+            /** @var Campaign $campaign */
             $campaign = Campaign::findOrFail($request->route('campaign'));
+            $property = Location::findOrFail($request->route('property'));
 
             $existingData = $visitor->collected_data ?? [];
             $campaignFields = $campaign->payload['fields'];
@@ -143,8 +168,16 @@ class VisitorController extends Controller
                 );
             }
 
-            // Update visitor data
+            // Persist visitor data
+            $visitor->vid = $request->route('vid');
+            $visitor->location_id = $property->id;
             $visitor->collected_data = $data;
+            $visitor->visits = [
+                [
+                    'created_at' => now()->format('Y-m-d H:i:s'),
+                    'type' => $request->input('utm_source'),
+                ]
+            ];
             $visitor->save();
         } else {
             return response()->json([
@@ -160,6 +193,28 @@ class VisitorController extends Controller
 
         return response()->json(
             Cache::get($visitKey)
+        );
+    }
+
+    #[Patch('toggle-favorite/{vid}/{property}', name: 'toggleFavorite')]
+    public function toggleFavorite(Request $request): JsonResponse
+    {
+        /** @var Visitor $visitor */
+        $visitor = Visitor::where('vid', $request->route('vid'))->latest()->firstOrFail();
+
+        $exists = $visitor->favoriteLocations()->where('location_id', $request->route('property'))->exists();
+        if ($exists) {
+            $visitor->favoriteLocations()->detach($request->route('property'));
+        } else {
+            $visitor->favoriteLocations()->attach($request->route('property'));
+        }
+
+        return response()->json(
+            PropertyResource::make(
+                Location::findOrFail(
+                    $request->route('property')
+                )
+            )
         );
     }
 }

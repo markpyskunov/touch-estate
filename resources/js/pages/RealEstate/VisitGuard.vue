@@ -164,7 +164,12 @@ const loadingStore = useLoadingStore()
 
 // Get campaign and property IDs from URL
 const propertyId = route.query['property'] as string
+let visitSource = (route.query['source'] || 'qr') as string
 const force = !!route.query['force']
+
+if (!['qr', 'nfc', 'website'].includes(visitSource)) {
+    visitSource = 'unknown';
+}
 
 const loading = ref(false)
 
@@ -230,8 +235,10 @@ const fetchData = async () => {
   if (!propertyId) return
 
   try {
+    visitStore.visitSource = visitSource;
+
     loadingStore.show()
-    await visitStore.fetchProperty(
+    await visitStore.fetchPropertyUsingSidAndAccessCode(
       propertyId,
       route.query['sid'] as string,
       route.query['access_code'] as string
@@ -272,10 +279,7 @@ const submitForm = async () => {
   if (!visitStore.property) return
 
   try {
-    await visitStore.sendVerificationCode({
-      ...form.value,
-      consent: consent.value
-    })
+    await visitStore.sendVerificationCode(form.value)
 
     router.push({
       path: '/real-estate/verify',

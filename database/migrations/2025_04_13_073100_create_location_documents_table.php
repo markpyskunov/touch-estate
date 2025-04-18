@@ -9,11 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('location_documents', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignUuid('location_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->string('url');
             $table->string('size');
+            $table->string('icon', 64);
+            $table->string('icon_color', 32);
             $table->timestamps();
         });
     }

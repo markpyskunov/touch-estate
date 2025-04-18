@@ -240,6 +240,7 @@ class LocationControllerTest extends TestCase
                     'meta',
                     'rooms',
                     'campaign',
+                    'campaign',
                     'created_at',
                     'updated_at',
                 ],

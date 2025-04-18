@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import {Property} from "@/contracts/properties";
+import {Property, VisitSource} from "@/contracts/properties";
 import axios from 'axios';
 
 const VISITOR_ID_KEY = 'vid'
@@ -15,26 +15,26 @@ type AuthMethod =
     | 'phone'
 
 export const useVisitStore = defineStore('visit', () => {
-  const visitorId = ref<string | null>(localStorage.getItem(VISITOR_ID_KEY))
+  const vid = ref<string | null>(localStorage.getItem(VISITOR_ID_KEY))
+    const visitSource = ref<VisitSource>('website');
 
-  if (!visitorId.value) {
-    visitorId.value = crypto.randomUUID()
-    localStorage.setItem(VISITOR_ID_KEY, visitorId.value)
+  if (!vid.value) {
+    vid.value = crypto.randomUUID()
+    localStorage.setItem(VISITOR_ID_KEY, vid.value)
   }
 
-  const property = ref<Property | null>(null);
-  const visitVerification = ref<VisitVerification | null>(null);
+  const property = ref<Property>();
+  const visitVerification = ref<VisitVerification>();
   const authMethod = ref<AuthMethod>('email');
   const loading = ref(false);
-  const error = ref<string | null>(null);
+  const error = ref<string>();
   const collectedData = ref<Record<string, string>>({});
 
-  async function fetchProperty(propertyId: string, sid: string, accessCode: string) {
-    loading.value = true;
-    error.value = null;
-
+  async function fetchPropertyUsingSidAndAccessCode(propertyId: string, sid: string, accessCode: string) {
     try {
-      const { data } = await axios.get<Property>(`/api/v1/visitors/properties/${propertyId}`, {
+      loading.value = true;
+      error.value = null;
+      const { data } = await axios.get<Property>(`/api/v1/visitors/properties/${vid.value}/${propertyId}`, {
         params: {
             sid,
             access_code: accessCode,
@@ -51,6 +51,26 @@ export const useVisitStore = defineStore('visit', () => {
     }
   }
 
+    async function fetchPropertyUsingVID(propertyId: string) {
+        try {
+            loading.value = true;
+            error.value = null;
+            const { data } = await axios.get<Property>(`/api/v1/visitors/properties/${vid.value}/${propertyId}`, {
+                params: {
+                    utm_source: visitSource.value,
+                }
+            });
+
+            property.value = data;
+            return data;
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Failed to fetch property';
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    }
+
     async function checkVerificationStatus(propertyId: string, force: boolean = false) {
         try {
             loading.value = true;
@@ -60,7 +80,7 @@ export const useVisitStore = defineStore('visit', () => {
                 throw new Error('Property must be fetched first');
             }
 
-            const { data } = await axios.get<VisitVerification>(`/api/v1/visitors/verify-visit/${visitorId.value}/${propertyId}/${property.value.campaign.id}`, {
+            const { data } = await axios.get<VisitVerification>(`/api/v1/visitors/verify-visit/${vid.value}/${propertyId}/${property.value.campaign.id}`, {
                 params: { force }
             });
 
@@ -81,10 +101,10 @@ export const useVisitStore = defineStore('visit', () => {
         collectedData.value = data;
 
         if (!property.value) {
-            throw new Error('Property must be fetched fisrt');
+            throw new Error('Property must be fetched first');
         }
 
-      const { data: sendVerificationCodeResponse } = await axios.post<VisitVerification>(`/api/v1/visitors/verify-visit/${visitorId.value}/${property.value.id}/${property.value.campaign.id}`, data);
+      const { data: sendVerificationCodeResponse } = await axios.post<VisitVerification>(`/api/v1/visitors/verify-visit/${vid.value}/${property.value.id}/${property.value.campaign.id}`, data);
 
       visitVerification.value = sendVerificationCodeResponse;
       return sendVerificationCodeResponse;
@@ -102,11 +122,12 @@ export const useVisitStore = defineStore('visit', () => {
         error.value = null;
 
         if (!property.value) {
-            throw new Error('Property must be fetched fisrt');
+            throw new Error('Property must be fetched first');
         }
 
-      const { data } = await axios.patch<VisitVerification>(`/api/v1/visitors/verify-visit/${visitorId.value}/${property.value.id}/${property.value.campaign.id}`, {
+      const { data } = await axios.patch<VisitVerification>(`/api/v1/visitors/verify-visit/${vid.value}/${property.value.id}/${property.value.campaign.id}`, {
         code,
+          utm_source: visitSource.value,
           ...collectedData.value,
       });
 
@@ -120,16 +141,39 @@ export const useVisitStore = defineStore('visit', () => {
     }
   }
 
+    async function toggleFavorite() {
+        try {
+            loading.value = true;
+            error.value = null;
+
+            if (!property.value) {
+                throw new Error('Property must be fetched first');
+            }
+
+            const { data } = await axios.patch<Property>(`/api/v1/visitors/toggle-favorite/${vid.value}/${property.value.id}`);
+
+            property.value = data;
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Failed to verify code';
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    }
+
   return {
-    visitorId,
+    vid,
+    visitSource,
     authMethod,
     property,
     visitVerification,
     loading,
     error,
-    fetchProperty,
+    fetchPropertyUsingVID,
+    fetchPropertyUsingSidAndAccessCode,
     sendVerificationCode,
     verifyCode,
     checkVerificationStatus,
+      toggleFavorite,
   }
 })

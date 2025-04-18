@@ -33,6 +33,7 @@ class LocationController extends Controller
                 'locationPricings',
                 'locationMetas',
                 'locationRooms',
+                'locationNotes',
                 'campaign',
             ])
             ->sortByDTO($request->toDto())
