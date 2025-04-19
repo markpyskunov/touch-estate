@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Touch Estate - Smart Real Estate Analytics & Data Collection</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Toastify CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <style>
         html {
             scroll-behavior: smooth;
@@ -120,6 +123,91 @@
         </div>
         <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 to-transparent"></div>
     </header>
+
+    <!-- NFC/QR Tag Section -->
+    <section class="py-24 bg-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
+                    Smart Technology
+                </span>
+                <h2 class="text-4xl font-bold mb-6">What is an NFC/QR Tag?</h2>
+                <p class="text-xl text-gray-600">
+                    Our custom-designed tags combine physical durability with digital intelligence.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Image -->
+                <div class="relative">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg">
+                        <img src="{{ asset('images/landing/nfc-qr-tag.jpg') }}" 
+                             alt="NFC/QR Tag" 
+                             class="w-full h-auto rounded-xl shadow-xl transform hover:scale-105 transition-transform duration-300">
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="space-y-8">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Custom Crafted</h3>
+                            <p class="text-gray-600">Each tag is carefully designed and manufactured by our team, ensuring the highest quality and durability for your real estate needs.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Document Holder</h3>
+                            <p class="text-gray-600">The tag includes a sturdy stand that securely holds your property documents, making it easy for visitors to access important information.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Smart Scanning</h3>
+                            <p class="text-gray-600">Equipped with both NFC and QR technology, visitors can easily scan the tag using their smartphones to access property information instantly.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Unique Identification</h3>
+                            <p class="text-gray-600">Every tag has a unique identifier that our application uses to track its location and usage, providing you with precise analytics for each property.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Features Section -->
     <section id="key-features" class="py-24 bg-white relative overflow-hidden">
@@ -258,8 +346,8 @@
 
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Visitors Chart -->
-                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                    <div class="flex items-center justify-between mb-6">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800">Weekly Visitors</h3>
                             <p class="text-sm text-gray-500">Last 7 days</p>
@@ -269,12 +357,14 @@
                             <span class="text-sm font-medium text-gray-600">Total Visitors</span>
                         </div>
                     </div>
-                    <canvas id="visitorsChart" height="300"></canvas>
+                    <div class="w-full relative" style="min-height: 200px; max-height: 300px;">
+                        <canvas id="visitorsChart"></canvas>
+                    </div>
                 </div>
 
                 <!-- Favorites Chart -->
-                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                    <div class="flex items-center justify-between mb-6">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800">Favorites Activity</h3>
                             <p class="text-sm text-gray-500">Last 7 days</p>
@@ -284,7 +374,9 @@
                             <span class="text-sm font-medium text-gray-600">Favorites Added</span>
                         </div>
                     </div>
-                    <canvas id="favoritesChart" height="300"></canvas>
+                    <div class="w-full relative" style="min-height: 200px; max-height: 300px;">
+                        <canvas id="favoritesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -313,87 +405,105 @@
             <!-- Journey Timeline -->
             <div class="max-w-4xl mx-auto relative">
                 <!-- Timeline Line -->
-                <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 transform -translate-x-1/2" style="height: calc(100% - 160px);"></div>
+                <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 transform -translate-x-1/2 hidden md:block" style="height: calc(100% - 160px);"></div>
 
                 <!-- Step 1 -->
-                <div class="relative mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300"></div>
+                <div class="relative mb-8 md:mb-16 group">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
                     <div class="flex items-center">
-                        <div class="w-1/2 pr-12 text-right">
-                            <div class="inline-block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 ml-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                        <div class="w-full md:w-1/2 md:pr-12 md:text-right">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
+                                <div class="w-16 h-16 mx-auto md:ml-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Scan Tag</h3>
-                                <p class="text-sm text-gray-600">Quick scan of QR/NFC tag at the property</p>
+                                <h3 class="text-lg font-semibold mb-2 text-center md:text-right group-hover:text-blue-600 transition-colors duration-300">Scan Tag</h3>
+                                <p class="text-sm text-gray-600 text-center md:text-right">Quick scan of QR/NFC tag at the property</p>
                             </div>
                         </div>
-                        <div class="w-1/2 pl-12">
+                        <div class="hidden md:block md:w-1/2 md:pl-12">
                             <!-- Empty space for alignment -->
                         </div>
+                    </div>
+                    <!-- Down Arrow for Mobile -->
+                    <div class="flex justify-center my-4 md:hidden">
+                        <svg class="w-6 h-6 text-blue-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
                     </div>
                 </div>
 
                 <!-- Step 2 -->
-                <div class="relative mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300"></div>
+                <div class="relative mb-8 md:mb-16 group">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
                     <div class="flex items-center">
-                        <div class="w-1/2 pr-12">
+                        <div class="hidden md:block md:w-1/2 md:pr-12">
                             <!-- Empty space for alignment -->
                         </div>
-                        <div class="w-1/2 pl-12 text-left">
-                            <div class="inline-block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 mr-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                        <div class="w-full md:w-1/2 md:pl-12 md:text-left">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
+                                <div class="w-16 h-16 mx-auto md:mr-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Quick Auth</h3>
-                                <p class="text-sm text-gray-600">Easy email or phone verification</p>
+                                <h3 class="text-lg font-semibold mb-2 text-center md:text-left group-hover:text-blue-600 transition-colors duration-300">Quick Auth</h3>
+                                <p class="text-sm text-gray-600 text-center md:text-left">Easy email or phone verification</p>
                             </div>
                         </div>
+                    </div>
+                    <!-- Down Arrow for Mobile -->
+                    <div class="flex justify-center my-4 md:hidden">
+                        <svg class="w-6 h-6 text-blue-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
                     </div>
                 </div>
 
                 <!-- Step 3 -->
-                <div class="relative mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300"></div>
+                <div class="relative mb-8 md:mb-16 group">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
                     <div class="flex items-center">
-                        <div class="w-1/2 pr-12 text-right">
-                            <div class="inline-block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 ml-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                        <div class="w-full md:w-1/2 md:pr-12 md:text-right">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
+                                <div class="w-16 h-16 mx-auto md:ml-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Provide Info</h3>
-                                <p class="text-sm text-gray-600">Share basic details like name and DOB</p>
+                                <h3 class="text-lg font-semibold mb-2 text-center md:text-right group-hover:text-blue-600 transition-colors duration-300">Provide Info</h3>
+                                <p class="text-sm text-gray-600 text-center md:text-right">Share basic details like name and DOB</p>
                             </div>
                         </div>
-                        <div class="w-1/2 pl-12">
+                        <div class="hidden md:block md:w-1/2 md:pl-12">
                             <!-- Empty space for alignment -->
                         </div>
+                    </div>
+                    <!-- Down Arrow for Mobile -->
+                    <div class="flex justify-center my-4 md:hidden">
+                        <svg class="w-6 h-6 text-blue-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
                     </div>
                 </div>
 
                 <!-- Step 4 -->
-                <div class="relative mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300"></div>
+                <div class="relative mb-8 md:mb-16 group">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
                     <div class="flex items-center">
-                        <div class="w-1/2 pr-12">
+                        <div class="hidden md:block md:w-1/2 md:pr-12">
                             <!-- Empty space for alignment -->
                         </div>
-                        <div class="w-1/2 pl-12 text-left">
-                            <div class="inline-block bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 mr-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                        <div class="w-full md:w-1/2 md:pl-12 md:text-left">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
+                                <div class="w-16 h-16 mx-auto md:mr-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Access Property</h3>
-                                <p class="text-sm text-gray-600">Get instant access to property details</p>
+                                <h3 class="text-lg font-semibold mb-2 text-center md:text-left group-hover:text-blue-600 transition-colors duration-300">Access Property</h3>
+                                <p class="text-sm text-gray-600 text-center md:text-left">Get instant access to property details</p>
                             </div>
                         </div>
                     </div>
@@ -401,17 +511,17 @@
 
                 <!-- Follow-up Section -->
                 <div class="mt-32 relative z-10 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div class="flex items-center gap-6">
+                    <div class="flex flex-col items-center sm:flex-row sm:items-start gap-6">
                         <div class="w-16 h-16 px-4 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
                             <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
                             </svg>
                         </div>
-                        <div>
+                        <div class="text-center sm:text-left">
                             <h3 class="text-xl font-semibold mb-2 text-blue-800">Stay Connected</h3>
                             <p class="text-gray-600">
-                                After the visit, we automatically send personalized follow-ups and reminders, 
-                                keeping your properties top of mind for potential buyers. Our engagement system 
+                                After the visit, we automatically send personalized follow-ups and reminders,
+                                keeping your properties top of mind for potential buyers. Our engagement system
                                 ensures visitors never forget about your listings.
                             </p>
                         </div>
@@ -507,15 +617,15 @@
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                        <div class="text-center md:text-left">
+                        <div class="text-center w-full md:w-auto">
                             <h3 class="text-2xl font-bold mb-2">Basic Package</h3>
-                            <p class="text-gray-600 mb-4">Perfect for agencies with up to 24 properties</p>
-                            <div class="flex items-baseline gap-2">
+                            <p class="text-gray-600 mb-4">Perfect for agencies with up to <br>24 properties simultaneously</p>
+                            <div class="flex items-baseline justify-center gap-2">
                                 <span class="text-4xl font-bold">$475</span>
                                 <span class="text-gray-500">/month</span>
                             </div>
                         </div>
-                        <div class="flex-1">
+                        <div class="flex-1 flex justify-center">
                             <ul class="space-y-3 text-gray-600">
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -579,7 +689,7 @@
             </div>
 
             <div class="max-w-2xl mx-auto">
-                <form class="bg-white rounded-2xl shadow-lg p-8">
+                <form id="contactForm" class="bg-white rounded-2xl shadow-lg p-8">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
@@ -591,7 +701,7 @@
                         </div>
                     </div>
                     <div class="mt-6">
-                        <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                        <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company (Optional)</label>
                         <input type="text" id="company" name="company" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div class="mt-6">
@@ -617,9 +727,8 @@
                     <p class="text-gray-400">Smart Real Estate Analytics & Data Collection</p>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
-                    <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
-                    <a href="#" class="text-gray-400 hover:text-white">Contact Us</a>
+                    <a href="{{ route('privacy-policy') }}" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white">Privacy Policy</a>
+                    <a href="{{ route('terms-of-service') }}" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white">Terms of Service</a>
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
@@ -629,6 +738,32 @@
     </footer>
 
     <script>
+        // Chart configuration
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: window.innerWidth < 640 ? 1.2 : 2,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        maxTicksLimit: 6
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                }
+            }
+        };
+
         // Visitors Chart
         const visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
         new Chart(visitorsCtx, {
@@ -644,19 +779,7 @@
                     fill: true
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+            options: chartConfig
         });
 
         // Favorites Chart
@@ -672,18 +795,73 @@
                     borderRadius: 4
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            options: chartConfig
+        });
+
+        // Update chart sizes on window resize
+        window.addEventListener('resize', () => {
+            chartConfig.aspectRatio = window.innerWidth < 640 ? 1.2 : 2;
+        });
+
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                company: document.getElementById('company').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                const response = await fetch('/contact-us', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success toast
+                    Toastify({
+                        text: data.message,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "#4CAF50",
+                        }
+                    }).showToast();
+
+                    // Clear the form
+                    this.reset();
+                } else {
+                    // Show error toast
+                    Toastify({
+                        text: data.message || 'Something went wrong. Please try again.',
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "#F44336",
+                        }
+                    }).showToast();
                 }
+            } catch (error) {
+                // Show error toast
+                Toastify({
+                    text: "An error occurred. Please try again later.",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                        background: "#F44336",
+                    }
+                }).showToast();
             }
         });
     </script>
