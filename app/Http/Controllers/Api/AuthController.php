@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\LogoutRequest;
 use App\Http\Requests\Api\Auth\UserRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\AuthUserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +30,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->accessToken;
 
         return response()->json([
-            'user' => new UserResource($user),
+            'user' => AuthUserResource::make($user),
             'token' => $token,
         ]);
     }
@@ -40,12 +40,12 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return response()->json([], 204);
+        return response()->json(null, 204);
     }
 
     #[Get('user', name: 'user', middleware: 'auth:api')]
     public function user(UserRequest $request): JsonResponse
     {
-        return response()->json(new UserResource($request->user()));
+        return response()->json(AuthUserResource::make($request->user()));
     }
 }

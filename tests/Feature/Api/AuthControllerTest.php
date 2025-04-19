@@ -78,20 +78,22 @@ class AuthControllerTest extends TestCase
         $token = $this->user->createToken('auth-token')->accessToken;
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => "Bearer {$token}",
         ])->getJson('/api/v1/auth/user');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'id',
-                'full_name',
                 'email',
+                'first_name',
+                'last_name',
                 'created_at',
                 'updated_at',
             ])
             ->assertJson([
                 'id' => $this->user->id,
-                'full_name' => $this->user->full_name,
+                'first_name' => $this->user->first_name,
+                'last_name' => $this->user->last_name,
                 'email' => $this->user->email,
             ]);
     }

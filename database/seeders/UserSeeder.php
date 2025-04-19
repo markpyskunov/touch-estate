@@ -41,11 +41,11 @@ class UserSeeder extends Seeder
         /** @var User $agent */
         $agent = User::factory()->create([
             'company_id' => $yourCompany->id,
-            'email' => 'yourcompany+agent@touchestate.ca',
+            'email' => 'yourcompany+realtor@touchestate.ca',
             'password' => Hash::make('123456'),
             'first_name' => 'Company',
-            'last_name' => 'Agent',
+            'last_name' => 'Realtor',
         ]);
-        $agent->assignRole(Role::AGENT->value);
+        $agent->assignRole(Role::REALTOR->value);
     }
 }

@@ -1,6 +1,7 @@
 import {Address} from "@/contracts/address";
 import {Campaign} from "@/contracts/campaigns";
 import {VisitSource} from "@/stores/visit";
+import {OwnerUser} from "@/contracts/users";
 
 interface LocationImage {
     id: string;
@@ -69,7 +70,7 @@ interface LocationDocument {
     icon_color: string;
 }
 
-interface LocationNote {
+export interface LocationNote {
     id: string;
     note: string;
     created_at: string;
@@ -109,6 +110,7 @@ export interface Property {
         visitors: number;
         favorites: number;
     },
+    realtor: OwnerUser|null;
     created_at: string;
     updated_at: string;
 }

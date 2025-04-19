@@ -17,10 +17,10 @@ class ContactFactory extends Factory
         return [
             'phone' => $this->faker->phoneNumber(),
             'phone_2' => $this->faker->phoneNumber(),
-            'phone_3' => $this->faker->phoneNumber(),
+            'phone_3' => null,
             'email' => $this->faker->email(),
-            'email_2' => $this->faker->email(),
-            'avatar' => $this->faker->image(),
+            'email_2' => null,
+            'avatar' => 'https://placehold.co/200x200/333/fff?text=Avatar',
         ];
     }
 }

@@ -23,6 +23,8 @@ class LocationNote extends Model
     use HasUUID;
 
     protected $fillable = [
+        'location_id',
+        'visitor_id',
         'note',
     ];
 

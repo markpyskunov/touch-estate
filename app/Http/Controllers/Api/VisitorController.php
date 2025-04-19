@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Public\FetchVisitPropertyPayloadRequest;
+use App\Http\Resources\LocationNoteResource;
 use App\Http\Resources\PropertyResource;
 use App\Models\Campaign;
 use App\Models\Location;
@@ -214,6 +215,24 @@ class VisitorController extends Controller
                 Location::findOrFail(
                     $request->route('property')
                 )
+            )
+        );
+    }
+
+    #[Post('notes/{vid}/{property}', name: 'storePropertyNote')]
+    public function storePropertyNote(Request $request): JsonResponse
+    {
+        /** @var Visitor $visitor */
+        $visitor = Visitor::where('vid', $request->route('vid'))->latest()->firstOrFail();
+        /** @var Location $property */
+        $property = Location::findOrFail($request->route('property'));
+
+        return response()->json(
+            LocationNoteResource::make(
+                $property->locationNotes()->create([
+                    'visitor_id' => $visitor->id,
+                    'note' => $request->input('note'),
+                ])
             )
         );
     }

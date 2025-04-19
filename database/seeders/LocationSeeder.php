@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Enums\LocationFeatureName;
+use App\Enums\Role;
 use App\Enums\RoomType;
 use App\Models\Address;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Location;
 use Faker\Factory as Faker;
@@ -298,11 +300,16 @@ class LocationSeeder extends Seeder
             ]
         ];
 
+        /** @var User $realtor */
+        $realtor = User::factory()->create();
+        $realtor->assignRole(Role::REALTOR->value);
+
         foreach ($locations as $location) {
             /** @var Location $createdLocation */
             $createdLocation = Location::create([
                 'company_id' => Company::whereName('Your company LTD')->first()->id,
                 'address_id' => Address::wherePlaceId('ChIJN1t_tDeuEmsRUsoyG83frY4')->first()->id,
+                'user_id' => $realtor->id,
                 'area_sqft' => 999,
                 'description' => 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
                 'name' => $location['name'],

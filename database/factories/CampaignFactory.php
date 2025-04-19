@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Campaign;
 use App\Models\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Campaign>
- */
 class CampaignFactory extends Factory
 {
+    protected $model = Campaign::class;
+
     public function definition(): array
     {
         return [

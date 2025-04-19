@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
  * @property string $id
  * @property string $address_id
  * @property string $company_id
+ * @property string $user_id
  * @property int|null $area_sqft
  * @property string $description
  * @property string $name
@@ -36,6 +37,7 @@ use Illuminate\Support\Collection;
  * @property-read null|\App\Models\Campaign $campaign
  * @property-read \App\Models\Company $company
  * @property-read Collection<LocationNote> $locationNotes
+ * @property-read User|null $realtor
  */
 class Location extends Model
 {
@@ -47,6 +49,7 @@ class Location extends Model
     protected $fillable = [
         'company_id',
         'address_id',
+        'user_id',
         'area_sqft',
         'description',
         'name',
@@ -117,6 +120,11 @@ class Location extends Model
     public function inVisitorFavorites(): BelongsToMany
     {
         return $this->belongsToMany(Visitor::class, 'visitors_favorite_locations');
+    }
+
+    public function realtor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function getStats(): array

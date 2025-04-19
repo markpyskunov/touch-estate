@@ -264,12 +264,16 @@
                 <div class="text-h5 font-weight-medium text-primary mb-1">{{ visitStore.property.stats.visitors }}</div>
                 <div class="text-caption text-grey">Views</div>
               </div>
-              <v-divider vertical></v-divider>
+
+              <v-divider vertical />
+
               <div class="d-flex flex-column align-center justify-center" style="width: 100%">
                 <div class="text-h5 font-weight-medium text-error mb-1">{{ visitStore.property.stats.favorites }}</div>
                 <div class="text-caption text-grey">Favorites</div>
               </div>
-              <v-divider vertical></v-divider>
+
+              <v-divider vertical />
+
               <div class="d-flex flex-column align-center justify-center" style="width: 100%">
                 <v-tooltip text="High demand on watching this property" location="bottom">
                   <template #activator="{ props }">
@@ -286,7 +290,9 @@
                 <div class="text-caption text-grey">Trending</div>
               </div>
             </div>
-            <v-divider class="mb-4"></v-divider>
+
+            <v-divider class="mb-4" />
+
             <div class="d-flex align-center justify-center">
               <v-icon color="warning" class="me-2">mdi-fire</v-icon>
               <span class="text-body-2">High interest in the last 30 days</span>
@@ -298,27 +304,28 @@
         <v-card class="sticky-top mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
           <v-card-text class="pt-4">
             <!-- Agent Info -->
-            <div class="d-flex align-center mb-6">
+            <div class="d-flex align-center mb-6" v-if="visitStore.property.realtor">
               <v-avatar size="80" class="me-4">
-                <v-img src="https://placehold.co/200x200/333/fff?text=Agent" />
+                <v-img v-if="visitStore.property.realtor.contact.avatar" :src="visitStore.property.realtor.contact.avatar" />
+                <v-img v-else src="https://placehold.co/200x200/333/fff?text=Agent" />
               </v-avatar>
               <div>
-                <div class="text-h6">John Smith</div>
+                <div class="text-h6">{{ visitStore.property.realtor.first_name }} {{ visitStore.property.realtor.last_name }}</div>
                 <div class="text-subtitle-2 text-grey">Real Estate Agent</div>
                 <div class="mt-2">
                   <div class="d-flex align-center mb-1">
                     <v-icon size="small" class="me-2">mdi-email</v-icon>
-                    <a href="mailto:john.smith@realestate.com" class="text-decoration-none">john.smith@realestate.com</a>
+                    <a href="mailto:john.smith@realestate.com" class="text-decoration-none">{{ visitStore.property.realtor.contact.email }}</a>
                   </div>
                   <div class="d-flex align-center">
                     <v-icon size="small" class="me-2">mdi-phone</v-icon>
-                    <a href="tel:+12505550123" class="text-decoration-none">+1 (250) 555-0123</a>
+                    <a :href="`tel:${visitStore.property.realtor.contact.phone}`" class="text-decoration-none">{{ visitStore.property.realtor.contact.phone }}</a>
                   </div>
                 </div>
               </div>
             </div>
 
-            <v-divider class="mb-6"></v-divider>
+            <v-divider class="mb-6" v-if="visitStore.property.realtor" />
 
             <!-- Subscribe Form -->
             <div class="text-h6 mb-4">Track This Property</div>
@@ -340,9 +347,9 @@
               </v-timeline>
             </div>
 
-            <v-form @submit.prevent="propertyMapperStore.subscribeToProperty">
+            <v-form>
               <v-textarea
-                v-model="propertyMapperStore.subscribeForm.personalNote"
+                v-model="note"
                 label="Add New Note"
                 placeholder="Add a note about this property..."
                 variant="outlined"
@@ -350,7 +357,21 @@
                 rows="2"
                 class="mb-4"
                 hide-details
-              ></v-textarea>
+              />
+
+                <v-btn
+                    color="primary"
+                    variant="outlined"
+                    block
+                    size="large"
+                    class="mb-6"
+                    @click="() => {
+                        visitStore.storeNote(note);
+                        note = '';
+                    }"
+                >
+                    Add note
+                </v-btn>
 
               <v-btn
                 color="primary"
@@ -358,12 +379,13 @@
                 block
                 size="large"
                 class="mb-6"
+                @click="propertyMapperStore.subscribeToProperty"
               >
                 Subscribe to Updates
               </v-btn>
             </v-form>
 
-            <v-divider class="mb-6"></v-divider>
+            <v-divider class="mb-6" />
 
             <!-- Recent Visits -->
             <div class="d-flex justify-space-between align-center mb-4">
@@ -565,7 +587,9 @@
                 <span class="text-body-2">Down Payment ({{ calculatorSettings.downPayment }}%)</span>
                 <span class="text-body-2">${{ calculateDownPayment(calculatorSettings.downPayment) }}</span>
               </div>
-              <v-divider class="my-2"></v-divider>
+
+              <v-divider class="my-2" />
+
               <div class="d-flex justify-space-between mb-2">
                 <span class="text-body-2">Loan Amount</span>
                 <span class="text-body-2">${{ calculateLoanAmount(calculatorSettings.downPayment) }}</span>
@@ -602,7 +626,9 @@
                 </div>
                 <span class="text-body-2">${{ propertyMapperStore.calculatorSettings.maintenanceFees }}/month</span>
               </div>
-              <v-divider class="my-2"></v-divider>
+
+              <v-divider class="my-2" />
+
               <div class="d-flex justify-space-between mt-auto">
                 <span class="text-body-2 font-weight-medium">Total Monthly Cost</span>
                 <span class="text-h6 text-primary">${{ calculateTotalMonthlyCost(calculatorSettings.downPayment) }}</span>
@@ -642,7 +668,6 @@ import {usePropertyMapperStore} from "@/stores/propertyMapper";
 import {computed, ref} from "vue";
 import {LocationRoom} from "@/contracts/properties";
 import {useLoadingStore} from "@/stores/loading";
-import {fi} from "vuetify/locale";
 
 const useMetric = ref(false);
 
@@ -650,6 +675,8 @@ const visitStore = useVisitStore();
 const loadingStore = useLoadingStore();
 const propertyMapperStore = usePropertyMapperStore();
 propertyMapperStore.injectProperty(visitStore.property);
+
+const note = ref('');
 
 const getLevelIcon = (level: number): string => {
     switch (level) {

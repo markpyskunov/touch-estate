@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import {Property, VisitSource} from "@/contracts/properties";
+import {LocationNote, Property, VisitSource} from "@/contracts/properties";
 import axios from 'axios';
 
 const VISITOR_ID_KEY = 'vid'
@@ -161,6 +161,29 @@ export const useVisitStore = defineStore('visit', () => {
         }
     }
 
+    async function storeNote(note: string) {
+        try {
+            loading.value = true;
+            error.value = null;
+
+            if (!property.value) {
+                throw new Error('Property must be fetched first');
+            }
+
+            console.log('>>>>>> note', note)
+            const { data } = await axios.post<LocationNote>(`/api/v1/visitors/notes/${vid.value}/${property.value.id}`, {
+                note,
+            });
+
+            property.value.notes.push(data);
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Failed to verify code';
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    }
+
   return {
     vid,
     visitSource,
@@ -175,5 +198,6 @@ export const useVisitStore = defineStore('visit', () => {
     verifyCode,
     checkVerificationStatus,
       toggleFavorite,
+      storeNote,
   }
 })

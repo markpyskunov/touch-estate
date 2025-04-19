@@ -28,8 +28,6 @@ use App\Models\Traits\HasUUID;
  * @property-read \App\Models\Company $company
  * @property-read \App\Models\Address $address
  * @property-read \App\Models\Contact|null $contact
- * @property-read \App\Models\Contact|null $full_name
- * @property-read \App\Models\Contact|null $initials
  */
 class User extends Authenticatable
 {
@@ -47,10 +45,10 @@ class User extends Authenticatable
 
     protected $fillable = [
         'company_id',
-        'email',
-        'password',
         'address_id',
         'contact_id',
+        'email',
+        'password',
         'first_name',
         'last_name',
     ];
@@ -78,22 +76,5 @@ class User extends Authenticatable
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
-    }
-
-    protected function fullName(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): string => trim("{$this->first_name} {$this->last_name}"),
-        );
-    }
-
-    protected function initials(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): string => strtoupper(
-                substr($this->first_name, 0, 1) .
-                substr($this->last_name, 0, 1)
-            ),
-        );
     }
 }

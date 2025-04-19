@@ -12,6 +12,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('company_id')->constrained()->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignUuid('address_id')->constrained()->restrictOnDelete()->cascadeOnUpdate();
+            $table->foreignUuid('user_id')->nullable()->constrained()->nullOnDelete()->cascadeOnUpdate();
             $table->unsignedMediumInteger('area_sqft')->nullable();
             $table->text('description')->nullable();
             $table->string('name', 255);
