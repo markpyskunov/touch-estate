@@ -122,7 +122,142 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+
+        /* Hover Animations */
+        .hover-lift {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        /* Pulse Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Gradient Animation */
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gradient-animate {
+            background-size: 200% 200%;
+            animation: gradient 15s ease infinite;
+        }
     </style>
+
+    <script>
+        // Intersection Observer for scroll animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            // Observe all animated elements
+            document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right, .scale-in').forEach((el) => {
+                observer.observe(el);
+            });
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add hover effects to cards
+            document.querySelectorAll('.feature-card, .pricing-card').forEach(card => {
+                card.classList.add('hover-lift');
+            });
+
+            // Add hover effects to buttons
+            document.querySelectorAll('button, .btn').forEach(button => {
+                button.classList.add('hover-scale');
+            });
+        });
+    </script>
 </head>
 <body class="bg-gray-50">
     <!-- Hero Section -->
@@ -130,19 +265,19 @@
         <div class="container mx-auto px-6 py-24 relative z-10">
             <div class="flex flex-col lg:flex-row items-center gap-16">
                 <div class="lg:w-1/2 space-y-8">
-                    <div class="inline-block">
+                    <div class="inline-block fade-in stagger-delay-1">
                         <span class="hero-badge px-4 py-2 rounded-full text-sm font-semibold mb-6 inline-block">
                             🚀 The Future of Real Estate Analytics
                         </span>
                     </div>
-                    <h1 class="text-5xl lg:text-6xl font-bold leading-tight">
+                    <h1 class="text-5xl lg:text-6xl font-bold leading-tight fade-in stagger-delay-2">
                         Transform Your <br><span class="text-blue-300">Real Estate</span> Business with Smart Analytics
                     </h1>
-                    <p class="text-xl text-blue-100 leading-relaxed">
+                    <p class="text-xl text-blue-100 leading-relaxed fade-in stagger-delay-3">
                         Touch Estate empowers real estate professionals with cutting-edge tools for visitor data collection,
                         performance analytics, and streamlined operations.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4 fade-in stagger-delay-4">
                         <a href="#pricing" class="bg-white text-blue-900 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition duration-300 text-center shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                             Get Started Now
                         </a>
@@ -165,7 +300,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="lg:w-1/2 relative">
+                <div class="lg:w-1/2 relative slide-in-right">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-2xl opacity-20 animate-pulse"></div>
                     <div class="relative">
                         <div class="hero-image bg-white rounded-xl overflow-hidden">
@@ -197,7 +332,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Smart Technology
                 </span>
@@ -209,7 +344,7 @@
 
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <!-- Image -->
-                <div class="relative">
+                <div class="relative slide-in-left">
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg">
                         <img src="{{ asset('images/landing/nfc-qr.jpeg') }}"
                              alt="NFC/QR Tag"
@@ -218,7 +353,7 @@
                 </div>
 
                 <!-- Features -->
-                <div class="space-y-8">
+                <div class="space-y-8 slide-in-right">
                     <div class="flex items-start gap-4">
                         <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,7 +417,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Powerful Features
                 </span>
@@ -295,7 +430,7 @@
             <!-- Features Grid -->
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Feature Card 1 -->
-                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 fade-in stagger-delay-1">
                     <div class="relative mb-6">
                         <div class="absolute inset-0 bg-blue-100 rounded-xl opacity-20 transform group-hover:scale-110 transition-transform duration-300"></div>
                         <div class="w-16 h-16 mx-auto relative z-10 flex items-center justify-center">
@@ -310,14 +445,14 @@
                         Set up your properties in minutes with our intuitive interface. No technical expertise required.
                     </p>
                     <div class="mt-6 text-center">
-                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm transform group-hover:scale-105 transition-transform duration-300">
                             Quick Setup
                         </span>
                     </div>
                 </div>
 
                 <!-- Feature Card 2 -->
-                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 fade-in stagger-delay-2">
                     <div class="relative mb-6">
                         <div class="absolute inset-0 bg-blue-100 rounded-xl opacity-20 transform group-hover:scale-110 transition-transform duration-300"></div>
                         <div class="w-16 h-16 mx-auto relative z-10 flex items-center justify-center">
@@ -331,14 +466,14 @@
                         Visitors can connect instantly through QR codes or NFC tags, making data collection seamless.
                     </p>
                     <div class="mt-6 text-center">
-                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm transform group-hover:scale-105 transition-transform duration-300">
                             Instant Access
                         </span>
                     </div>
                 </div>
 
                 <!-- Feature Card 3 -->
-                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 fade-in stagger-delay-3">
                     <div class="relative mb-6">
                         <div class="absolute inset-0 bg-blue-100 rounded-xl opacity-20 transform group-hover:scale-110 transition-transform duration-300"></div>
                         <div class="w-16 h-16 mx-auto relative z-10 flex items-center justify-center">
@@ -352,7 +487,7 @@
                         Gain deep insights into visitor behavior, property performance, and market trends.
                     </p>
                     <div class="mt-6 text-center">
-                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm transform group-hover:scale-105 transition-transform duration-300">
                             Smart Insights
                         </span>
                     </div>
@@ -361,9 +496,9 @@
 
             <!-- Feature Highlights -->
             <div class="mt-16 grid md:grid-cols-2 gap-8">
-                <div class="bg-blue-50 rounded-2xl p-8">
+                <div class="bg-blue-50 rounded-2xl p-8 fade-in stagger-delay-4 hover:bg-blue-100 transition-colors duration-300">
                     <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -372,9 +507,9 @@
                     </div>
                     <p class="text-gray-600">Capture visitor information instantly and securely, with automatic data validation and storage.</p>
                 </div>
-                <div class="bg-blue-50 rounded-2xl p-8">
+                <div class="bg-blue-50 rounded-2xl p-8 fade-in stagger-delay-5 hover:bg-blue-100 transition-colors duration-300">
                     <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
@@ -397,7 +532,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Real-time Analytics
                 </span>
@@ -455,7 +590,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Seamless Experience
                 </span>
@@ -468,21 +603,23 @@
             <!-- Journey Timeline -->
             <div class="max-w-4xl mx-auto relative">
                 <!-- Timeline Line -->
-                <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 transform -translate-x-1/2 hidden md:block" style="height: calc(100% - 160px);"></div>
+                <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 transform -translate-x-1/2 hidden md:block animate-pulse" style="height: calc(100% - 160px);"></div>
 
                 <!-- Step 1 -->
-                <div class="relative mb-8 md:mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-1">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="w-full md:w-1/2 md:pr-12 md:text-right">
-                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 mx-auto md:ml-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200 transform group-hover:-translate-y-1">
+                                <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300 transform group-hover:scale-110 mx-auto md:float-right md:ml-6 mb-6">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 text-center md:text-right group-hover:text-blue-600 transition-colors duration-300">Scan Tag</h3>
-                                <p class="text-sm text-gray-600 text-center md:text-right">Quick scan of QR/NFC tag at the property</p>
+                                <div class="text-center md:text-right">
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Scan Tag</h3>
+                                    <p class="text-sm text-gray-600">Quick scan of QR/NFC tag at the property</p>
+                                </div>
                             </div>
                         </div>
                         <div class="hidden md:block md:w-1/2 md:pl-12">
@@ -498,21 +635,23 @@
                 </div>
 
                 <!-- Step 2 -->
-                <div class="relative mb-8 md:mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-2">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="hidden md:block md:w-1/2 md:pr-12">
                             <!-- Empty space for alignment -->
                         </div>
                         <div class="w-full md:w-1/2 md:pl-12 md:text-left">
-                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 mx-auto md:mr-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200 transform group-hover:-translate-y-1">
+                                <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300 transform group-hover:scale-110 mx-auto md:float-left md:mr-6 mb-6">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 text-center md:text-left group-hover:text-blue-600 transition-colors duration-300">Quick Auth</h3>
-                                <p class="text-sm text-gray-600 text-center md:text-left">Easy email or phone verification</p>
+                                <div class="text-center md:text-left">
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Quick Auth</h3>
+                                    <p class="text-sm text-gray-600">Easy email or phone verification</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -525,18 +664,20 @@
                 </div>
 
                 <!-- Step 3 -->
-                <div class="relative mb-8 md:mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-3">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="w-full md:w-1/2 md:pr-12 md:text-right">
-                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 mx-auto md:ml-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200 transform group-hover:-translate-y-1">
+                                <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300 transform group-hover:scale-110 mx-auto md:float-right md:ml-6 mb-6">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 text-center md:text-right group-hover:text-blue-600 transition-colors duration-300">Provide Info</h3>
-                                <p class="text-sm text-gray-600 text-center md:text-right">Share basic details like name and DOB</p>
+                                <div class="text-center md:text-right">
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Provide Info</h3>
+                                    <p class="text-sm text-gray-600">Share basic details like name and DOB</p>
+                                </div>
                             </div>
                         </div>
                         <div class="hidden md:block md:w-1/2 md:pl-12">
@@ -552,30 +693,32 @@
                 </div>
 
                 <!-- Step 4 -->
-                <div class="relative mb-8 md:mb-16 group">
-                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block"></div>
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-4">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="hidden md:block md:w-1/2 md:pr-12">
                             <!-- Empty space for alignment -->
                         </div>
                         <div class="w-full md:w-1/2 md:pl-12 md:text-left">
-                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200">
-                                <div class="w-16 h-16 mx-auto md:mr-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-blue-200 transform group-hover:-translate-y-1">
+                                <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300 transform group-hover:scale-110 mx-auto md:float-left md:mr-6 mb-6">
                                     <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold mb-2 text-center md:text-left group-hover:text-blue-600 transition-colors duration-300">Access Property</h3>
-                                <p class="text-sm text-gray-600 text-center md:text-left">Get instant access to property details</p>
+                                <div class="text-center md:text-left">
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">Access Property</h3>
+                                    <p class="text-sm text-gray-600">Get instant access to property details</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Follow-up Section -->
-                <div class="mt-32 relative z-10 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div class="mt-32 relative z-10 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 fade-in stagger-delay-5 transform hover:-translate-y-1">
                     <div class="flex flex-col items-center sm:flex-row sm:items-start gap-6">
-                        <div class="w-16 h-16 px-4 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                        <div class="w-16 h-16 px-4 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300 transform group-hover:scale-110">
                             <svg class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
                             </svg>
@@ -604,7 +747,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Seamless Integrations
                 </span>
@@ -667,7 +810,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Simple Pricing
                 </span>
@@ -741,7 +884,7 @@
 
         <div class="container mx-auto px-6 relative z-10">
             <!-- Section Header -->
-            <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="text-center max-w-3xl mx-auto mb-16 fade-in">
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Get in Touch
                 </span>
