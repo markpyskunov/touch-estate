@@ -24,6 +24,8 @@ use Illuminate\Support\Collection;
  * @property-read \App\Models\Location $location
  * @property-read \App\Models\Campaign $campaign
  * @property-read Collection<LocationNote> $locationNotes
+ * @property-read Collection<Location> $favoriteLocations
+ * @property-read Collection<Location> $subscribedToLocations
  */
 class Visitor extends Model
 {
@@ -61,5 +63,10 @@ class Visitor extends Model
     public function favoriteLocations(): BelongsToMany
     {
         return $this->belongsToMany(Location::class, 'visitors_favorite_locations');
+    }
+
+    public function subscribedToLocations(): BelongsToMany
+    {
+        return $this->belongsToMany(Location::class, 'visitors_subscribed_to_locations');
     }
 }

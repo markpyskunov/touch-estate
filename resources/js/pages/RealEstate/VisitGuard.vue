@@ -164,7 +164,7 @@ const loadingStore = useLoadingStore()
 
 // Get campaign and property IDs from URL
 const propertyId = route.query['property'] as string
-let visitSource = (route.query['source'] || 'qr') as string
+let visitSource = (route.query['utm_source'] || 'qr') as string
 const force = !!route.query['force']
 
 if (!['qr', 'nfc', 'website'].includes(visitSource)) {

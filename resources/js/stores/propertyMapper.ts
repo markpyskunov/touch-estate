@@ -230,11 +230,6 @@ export const usePropertyMapperStore = defineStore('propertyMapper', () => {
         }).format(date)
     }
 
-    const subscribeToProperty = () => {
-        // We'll get email from Pinia state here
-        console.log('Subscription submitted:', subscribeForm.value)
-    }
-
     const formatVisitDate = (date: Date): string => {
         const now = new Date()
         const diff = now.getTime() - date.getTime()
@@ -301,7 +296,6 @@ export const usePropertyMapperStore = defineStore('propertyMapper', () => {
       injectProperty,
       getLevelIcon,
       formatDate,
-      subscribeToProperty,
       formatVisitDate,
   }
 })

@@ -53,6 +53,7 @@ class LandingPageController extends Controller
             'sid' => $sid,
             'access_code' => $accessCode,
             'force' => $request->query->getBoolean('force'),
+            'utm_source' => $request->query('utm_source', 'qr'),
         ];
         if (!$params['force']) {
             unset($params['force']);

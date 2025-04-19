@@ -7,7 +7,7 @@ interface Store {
 export const useLoadingStore = defineStore('loading', {
   state: (): Store => ({
     isLoading: false,
-    loadingMessage: null
+    loadingMessage: '...',
   }),
   actions: {
     show(message: string = 'Loading...') {
@@ -16,7 +16,7 @@ export const useLoadingStore = defineStore('loading', {
     },
     hide() {
       this.isLoading = false
-      this.loadingMessage = null
+      this.loadingMessage = '...'
     }
   }
 })

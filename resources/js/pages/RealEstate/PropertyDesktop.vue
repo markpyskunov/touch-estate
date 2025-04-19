@@ -207,11 +207,8 @@
               <v-switch
                 v-model="useMetric"
                 hide-details
-                density="compact"
                 color="primary"
-                inset
                 class="mt-0 pt-0"
-                style="margin-top: -8px !important"
               />
               <span
                 class="text-caption ms-2 d-flex align-center"
@@ -315,7 +312,7 @@
                 <div class="mt-2">
                   <div class="d-flex align-center mb-1">
                     <v-icon size="small" class="me-2">mdi-email</v-icon>
-                    <a href="mailto:john.smith@realestate.com" class="text-decoration-none">{{ visitStore.property.realtor.contact.email }}</a>
+                    <a :href="`mailto:${visitStore.property.realtor.contact.email}`" class="text-decoration-none">{{ visitStore.property.realtor.contact.email }}</a>
                   </div>
                   <div class="d-flex align-center">
                     <v-icon size="small" class="me-2">mdi-phone</v-icon>
@@ -347,7 +344,7 @@
               </v-timeline>
             </div>
 
-            <v-form>
+            <div>
               <v-textarea
                 v-model="note"
                 label="Add New Note"
@@ -369,21 +366,23 @@
                         visitStore.storeNote(note);
                         note = '';
                     }"
+                    :disabled="note.length === 0"
                 >
                     Add note
                 </v-btn>
 
               <v-btn
-                color="primary"
+                :color="visitStore.property.is_subscribed ? 'error' : 'primary'"
                 type="submit"
                 block
                 size="large"
                 class="mb-6"
-                @click="propertyMapperStore.subscribeToProperty"
+                @click="visitStore.toggleSubscribe"
+                v-text="visitStore.property.is_subscribed ? 'Unsubscribe from updates' : 'Subscribe to updates'"
               >
-                Subscribe to Updates
+
               </v-btn>
-            </v-form>
+            </div>
 
             <v-divider class="mb-6" />
 
@@ -624,7 +623,7 @@
                     </template>
                   </v-tooltip>
                 </div>
-                <span class="text-body-2">${{ propertyMapperStore.calculatorSettings.maintenanceFees }}/month</span>
+                <span class="text-body-2">${{ calculatorSettings.maintenanceFees }}/month</span>
               </div>
 
               <v-divider class="my-2" />
@@ -664,7 +663,6 @@
 import InteractiveMap from '@/components/InteractiveMap.vue'
 import {useVisitStore} from "@/stores/visit";
 import {formatCurrency, formatDate} from "@/shared/helpers";
-import {usePropertyMapperStore} from "@/stores/propertyMapper";
 import {computed, ref} from "vue";
 import {LocationRoom} from "@/contracts/properties";
 import {useLoadingStore} from "@/stores/loading";
@@ -673,10 +671,9 @@ const useMetric = ref(false);
 
 const visitStore = useVisitStore();
 const loadingStore = useLoadingStore();
-const propertyMapperStore = usePropertyMapperStore();
-propertyMapperStore.injectProperty(visitStore.property);
 
 const note = ref('');
+const subscribeEmail = ref('');
 
 const getLevelIcon = (level: number): string => {
     switch (level) {

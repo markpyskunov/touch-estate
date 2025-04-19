@@ -106,6 +106,7 @@ export interface Property {
     visits: VisitorVisit[];
     campaign: Campaign;
     is_favorite: boolean;
+    is_subscribed: boolean;
     stats: {
         visitors: number;
         favorites: number;

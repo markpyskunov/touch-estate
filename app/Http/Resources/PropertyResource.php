@@ -54,6 +54,11 @@ class PropertyResource extends JsonResource
                 fn() => $visitor->favoriteLocations()->where('location_id', $model->id)->exists(),
                 false
             ),
+            'is_subscribed' => $this->when(
+                $visitor,
+                fn() => $visitor->subscribedToLocations()->where('location_id', $model->id)->exists(),
+                false
+            ),
             'realtor' => OwnerUserResource::make($model->realtor),
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at,

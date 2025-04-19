@@ -150,9 +150,30 @@ export const useVisitStore = defineStore('visit', () => {
                 throw new Error('Property must be fetched first');
             }
 
-            const { data } = await axios.patch<Property>(`/api/v1/visitors/toggle-favorite/${vid.value}/${property.value.id}`);
+            const { data } = await axios.patch<{ current_state: boolean }>(`/api/v1/visitors/toggle-favorite/${vid.value}/${property.value.id}`);
 
-            property.value = data;
+            property.value.is_favorite = data.current_state;
+            property.value.stats.favorites = property.value.stats.favorites + (data.current_state ? 1 : -1);
+        } catch (err) {
+            error.value = err instanceof Error ? err.message : 'Failed to verify code';
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function toggleSubscribe() {
+        try {
+            loading.value = true;
+            error.value = null;
+
+            if (!property.value) {
+                throw new Error('Property must be fetched first');
+            }
+
+            const { data } = await axios.patch<{ current_state: boolean }>(`/api/v1/visitors/toggle-subscribe/${vid.value}/${property.value.id}`);
+
+            property.value.is_subscribed = data.current_state;
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'Failed to verify code';
             throw err;
@@ -184,6 +205,10 @@ export const useVisitStore = defineStore('visit', () => {
         }
     }
 
+    const subscribeToProperty = () => {
+        console.log('Subscription submitted')
+    }
+
   return {
     vid,
     visitSource,
@@ -198,6 +223,7 @@ export const useVisitStore = defineStore('visit', () => {
     verifyCode,
     checkVerificationStatus,
       toggleFavorite,
+      toggleSubscribe,
       storeNote,
   }
 })

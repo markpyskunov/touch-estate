@@ -122,6 +122,11 @@ class Location extends Model
         return $this->belongsToMany(Visitor::class, 'visitors_favorite_locations');
     }
 
+    public function inVisitorSubscription(): BelongsToMany
+    {
+        return $this->belongsToMany(Visitor::class, 'visitors_subscribed_to_locations');
+    }
+
     public function realtor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -206,17 +206,35 @@ class VisitorController extends Controller
         $exists = $visitor->favoriteLocations()->where('location_id', $request->route('property'))->exists();
         if ($exists) {
             $visitor->favoriteLocations()->detach($request->route('property'));
+            $res = false;
         } else {
             $visitor->favoriteLocations()->attach($request->route('property'));
+            $res = true;
         }
 
-        return response()->json(
-            PropertyResource::make(
-                Location::findOrFail(
-                    $request->route('property')
-                )
-            )
-        );
+        return response()->json([
+            'current_state' => $res,
+        ]);
+    }
+
+    #[Patch('toggle-subscribe/{vid}/{property}', name: 'toggleSubscribe')]
+    public function toggleSubscribe(Request $request): JsonResponse
+    {
+        /** @var Visitor $visitor */
+        $visitor = Visitor::where('vid', $request->route('vid'))->latest()->firstOrFail();
+
+        $exists = $visitor->subscribedToLocations()->where('location_id', $request->route('property'))->exists();
+        if ($exists) {
+            $visitor->subscribedToLocations()->detach($request->route('property'));
+            $res = false;
+        } else {
+            $visitor->subscribedToLocations()->attach($request->route('property'));
+            $res = true;
+        }
+
+        return response()->json([
+            'current_state' => $res,
+        ]);
     }
 
     #[Post('notes/{vid}/{property}', name: 'storePropertyNote')]
