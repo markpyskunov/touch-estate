@@ -3,7 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Touch Estate - Smart Real Estate Analytics & Data Collection</title>
+
+    <!-- Primary Meta Tags -->
+    <title>Touch Estate - Smart Real Estate Analytics & Data Collection Platform</title>
+    <meta name="title" content="Touch Estate - Smart Real Estate Analytics & Data Collection Platform">
+    <meta name="description" content="Transform your real estate business with Touch Estate's NFC/QR tag system. Track visitor data, analyze property performance, and streamline your operations with our innovative platform.">
+    <meta name="keywords" content="real estate analytics, property tracking, NFC tags, QR codes, visitor data, real estate technology, property management, real estate marketing">
+    <meta name="author" content="Touch Estate">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Touch Estate - Smart Real Estate Analytics & Data Collection Platform">
+    <meta property="og:description" content="Transform your real estate business with Touch Estate's NFC/QR tag system. Track visitor data, analyze property performance, and streamline your operations.">
+    <meta property="og:image" content="{{ asset('images/landing/hero.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="Touch Estate - Smart Real Estate Analytics & Data Collection Platform">
+    <meta property="twitter:description" content="Transform your real estate business with Touch Estate's NFC/QR tag system. Track visitor data, analyze property performance, and streamline your operations.">
+    <meta property="twitter:image" content="{{ asset('images/landing/hero.png') }}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('favico-2.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favico-2.png') }}">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Touch Estate",
+        "url": "{{ url('/') }}",
+        "logo": "{{ asset('images/logo.png') }}",
+        "description": "Smart Real Estate Analytics & Data Collection Platform",
+        "sameAs": [
+            "https://twitter.com/touchestate",
+            "https://linkedin.com/company/touchestate"
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Touch Estate Analytics Platform",
+        "description": "Real estate analytics and visitor tracking system using NFC/QR technology",
+        "brand": {
+            "@type": "Brand",
+            "name": "Touch Estate"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "475",
+            "priceCurrency": "CAD",
+            "availability": "https://schema.org/InStock"
+        }
+    }
+    </script>
+
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Add Toastify CSS and JS -->
@@ -73,7 +136,7 @@
                         </span>
                     </div>
                     <h1 class="text-5xl lg:text-6xl font-bold leading-tight">
-                        Transform Your <span class="text-blue-300">Real Estate</span> Business with Smart Analytics
+                        Transform Your <br><span class="text-blue-300">Real Estate</span> Business with Smart Analytics
                     </h1>
                     <p class="text-xl text-blue-100 leading-relaxed">
                         Touch Estate empowers real estate professionals with cutting-edge tools for visitor data collection,
@@ -106,7 +169,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-2xl opacity-20 animate-pulse"></div>
                     <div class="relative">
                         <div class="hero-image bg-white rounded-xl overflow-hidden">
-                            <img src="{{ asset('images/landing/hero-dashboard.jpg') }}"
+                            <img src="{{ asset('images/landing/hero.png') }}"
                                  alt="Touch Estate Dashboard"
                                  class="w-full h-auto rounded-xl shadow-2xl"
                                  loading="eager">
@@ -114,7 +177,7 @@
                         <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4 shadow-xl">
                             <div class="flex items-center gap-3">
                                 <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                                <span class="text-sm font-medium">Live Analytics</span>
+                                <span class="text-sm font-medium">Get more faster</span>
                             </div>
                         </div>
                     </div>
@@ -148,8 +211,8 @@
                 <!-- Image -->
                 <div class="relative">
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg">
-                        <img src="{{ asset('images/landing/nfc-qr-tag.jpg') }}" 
-                             alt="NFC/QR Tag" 
+                        <img src="{{ asset('images/landing/nfc-qr.jpeg') }}"
+                             alt="NFC/QR Tag"
                              class="w-full h-auto rounded-xl shadow-xl transform hover:scale-105 transition-transform duration-300">
                     </div>
                 </div>
