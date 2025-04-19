@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         .gradient-bg {
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
             position: relative;
@@ -77,7 +80,7 @@
                         <a href="#pricing" class="bg-white text-blue-900 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition duration-300 text-center shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                             Get Started Now
                         </a>
-                        <a href="#features" class="bg-blue-800 bg-opacity-50 text-white px-8 py-4 rounded-xl font-semibold hover:bg-opacity-70 transition duration-300 text-center border border-blue-400">
+                        <a href="#key-features" class="bg-blue-800 bg-opacity-50 text-white px-8 py-4 rounded-xl font-semibold hover:bg-opacity-70 transition duration-300 text-center border border-blue-400">
                             View Features
                         </a>
                     </div>
@@ -119,42 +122,168 @@
     </header>
 
     <!-- Features Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center mb-12">Key Features</h2>
+    <section id="key-features" class="py-24 bg-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
+                    Powerful Features
+                </span>
+                <h2 class="text-4xl font-bold mb-6">Everything You Need to Succeed</h2>
+                <p class="text-xl text-gray-600">
+                    Our comprehensive suite of tools helps you collect, analyze, and act on visitor data with ease.
+                </p>
+            </div>
+
+            <!-- Features Grid -->
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="feature-card bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{{ asset('images/landing/easy-config.jpg') }}" alt="Easy Configuration" class="w-16 h-16 mx-auto mb-4">
-                    <h3 class="text-xl font-semibold mb-2">Easy Configuration</h3>
-                    <p class="text-gray-600">Set up your properties in minutes with our intuitive interface. No technical expertise required.</p>
+                <!-- Feature Card 1 -->
+                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="relative mb-6">
+                        <div class="absolute inset-0 bg-blue-100 rounded-xl opacity-20 transform group-hover:scale-110 transition-transform duration-300"></div>
+                        <div class="w-16 h-16 mx-auto relative z-10 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-blue-600 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-center group-hover:text-blue-600 transition-colors duration-300">Easy Configuration</h3>
+                    <p class="text-gray-600 text-center leading-relaxed">
+                        Set up your properties in minutes with our intuitive interface. No technical expertise required.
+                    </p>
+                    <div class="mt-6 text-center">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm">
+                            Quick Setup
+                        </span>
+                    </div>
                 </div>
-                <div class="feature-card bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{{ asset('images/landing/visitor-connect.jpg') }}" alt="Easy Visitor Connection" class="w-16 h-16 mx-auto mb-4">
-                    <h3 class="text-xl font-semibold mb-2">Easy Visitor Connection</h3>
-                    <p class="text-gray-600">Visitors can connect instantly through QR codes or NFC tags, making data collection seamless.</p>
+
+                <!-- Feature Card 2 -->
+                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="relative mb-6">
+                        <div class="absolute inset-0 bg-blue-100 rounded-xl opacity-20 transform group-hover:scale-110 transition-transform duration-300"></div>
+                        <div class="w-16 h-16 mx-auto relative z-10 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-blue-600 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-center group-hover:text-blue-600 transition-colors duration-300">Easy Visitor Connection</h3>
+                    <p class="text-gray-600 text-center leading-relaxed">
+                        Visitors can connect instantly through QR codes or NFC tags, making data collection seamless.
+                    </p>
+                    <div class="mt-6 text-center">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm">
+                            Instant Access
+                        </span>
+                    </div>
                 </div>
-                <div class="feature-card bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{{ asset('images/landing/analytics.jpg') }}" alt="Powerful Analytics" class="w-16 h-16 mx-auto mb-4">
-                    <h3 class="text-xl font-semibold mb-2">Powerful Analytics</h3>
-                    <p class="text-gray-600">Gain deep insights into visitor behavior, property performance, and market trends.</p>
+
+                <!-- Feature Card 3 -->
+                <div class="feature-card group bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="relative mb-6">
+                        <div class="absolute inset-0 bg-blue-100 rounded-xl opacity-20 transform group-hover:scale-110 transition-transform duration-300"></div>
+                        <div class="w-16 h-16 mx-auto relative z-10 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-blue-600 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-center group-hover:text-blue-600 transition-colors duration-300">Powerful Analytics</h3>
+                    <p class="text-gray-600 text-center leading-relaxed">
+                        Gain deep insights into visitor behavior, property performance, and market trends.
+                    </p>
+                    <div class="mt-6 text-center">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm">
+                            Smart Insights
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Highlights -->
+            <div class="mt-16 grid md:grid-cols-2 gap-8">
+                <div class="bg-blue-50 rounded-2xl p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold">Real-time Data Collection</h4>
+                    </div>
+                    <p class="text-gray-600">Capture visitor information instantly and securely, with automatic data validation and storage.</p>
+                </div>
+                <div class="bg-blue-50 rounded-2xl p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold">Lightning Fast Performance</h4>
+                    </div>
+                    <p class="text-gray-600">Experience blazing-fast data processing and real-time analytics with our optimized platform.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Analytics Section -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center mb-12">Analytics Dashboard</h2>
+    <section class="py-24 bg-gray-50 relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
+                    Real-time Analytics
+                </span>
+                <h2 class="text-4xl font-bold mb-6">Data-Driven Insights</h2>
+                <p class="text-xl text-gray-600">
+                    Track visitor behavior and property performance with our powerful analytics dashboard.
+                </p>
+            </div>
+
             <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{{ asset('images/landing/visitors-chart.jpg') }}" alt="Weekly Visitors" class="w-full h-48 object-cover rounded-lg mb-4">
-                    <h3 class="text-xl font-semibold mb-4">Weekly Visitors</h3>
+                <!-- Visitors Chart -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">Weekly Visitors</h3>
+                            <p class="text-sm text-gray-500">Last 7 days</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            <span class="text-sm font-medium text-gray-600">Total Visitors</span>
+                        </div>
+                    </div>
                     <canvas id="visitorsChart" height="300"></canvas>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{{ asset('images/landing/favorites-chart.jpg') }}" alt="Favorites Activity" class="w-full h-48 object-cover rounded-lg mb-4">
-                    <h3 class="text-xl font-semibold mb-4">Favorites Activity</h3>
+
+                <!-- Favorites Chart -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">Favorites Activity</h3>
+                            <p class="text-sm text-gray-500">Last 7 days</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <span class="text-sm font-medium text-gray-600">Favorites Added</span>
+                        </div>
+                    </div>
                     <canvas id="favoritesChart" height="300"></canvas>
                 </div>
             </div>
@@ -162,64 +291,188 @@
     </section>
 
     <!-- Integrations Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center mb-12">Seamless Integrations</h2>
+    <section class="py-24 bg-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
+                    Seamless Integrations
+                </span>
+                <h2 class="text-4xl font-bold mb-6">Connect with Your Favorite Tools</h2>
+                <p class="text-xl text-gray-600">
+                    Integrate with popular platforms and services to streamline your workflow.
+                </p>
+            </div>
+
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <img src="{{ asset('images/landing/mortgage-integration.jpg') }}" alt="Mortgage Brokers" class="w-24 h-24 mx-auto mb-4">
-                    <h3 class="text-xl font-semibold">Mortgage Brokers</h3>
-                    <p class="text-gray-600">Connect with mortgage professionals to streamline the buying process.</p>
+                <!-- Mortgage Brokers -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-blue-50 rounded-xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center mb-4">Mortgage Brokers</h3>
+                    <p class="text-gray-600 text-center">
+                        Connect with mortgage professionals to streamline the buying process.
+                    </p>
                 </div>
-                <div class="text-center">
-                    <img src="{{ asset('images/landing/crm-integration.jpg') }}" alt="CRM Systems" class="w-24 h-24 mx-auto mb-4">
-                    <h3 class="text-xl font-semibold">CRM Systems</h3>
-                    <p class="text-gray-600">Sync your data with popular CRM platforms for better lead management.</p>
+
+                <!-- CRM Systems -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-blue-50 rounded-xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center mb-4">CRM Systems</h3>
+                    <p class="text-gray-600 text-center">
+                        Sync your data with popular CRM platforms for better lead management.
+                    </p>
                 </div>
-                <div class="text-center">
-                    <img src="{{ asset('images/landing/api-integration.jpg') }}" alt="API Access" class="w-24 h-24 mx-auto mb-4">
-                    <h3 class="text-xl font-semibold">API Access</h3>
-                    <p class="text-gray-600">Custom integrations through our powerful API.</p>
+
+                <!-- API Access -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-blue-50 rounded-xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center mb-4">API Access</h3>
+                    <p class="text-gray-600 text-center">
+                        Custom integrations through our powerful API.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
+    <section id="pricing" class="py-24 bg-gray-50 relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
+                    Simple Pricing
+                </span>
+                <h2 class="text-4xl font-bold mb-6">Choose Your Plan</h2>
+                <p class="text-xl text-gray-600">
+                    Start with our basic package and scale as you grow.
+                </p>
+            </div>
+
             <div class="max-w-4xl mx-auto">
-                <div class="bg-white rounded-lg shadow-lg p-8">
-                    <div class="text-center mb-8">
-                        <img src="{{ asset('images/landing/pricing-tags.jpg') }}" alt="NFC/QR Tags" class="w-32 h-32 mx-auto mb-4">
-                        <h3 class="text-2xl font-bold">Basic Package</h3>
-                        <p class="text-gray-600">Perfect for agencies with up to 24 properties</p>
-                    </div>
-                    <div class="flex flex-col md:flex-row justify-between items-center">
-                        <div class="mb-4 md:mb-0">
-                            <p class="text-4xl font-bold">$475 CAD</p>
-                            <p class="text-gray-600">per month</p>
-                        </div>
+                <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <div class="text-center md:text-left">
-                            <p class="font-semibold">Includes:</p>
-                            <ul class="list-disc list-inside text-gray-600">
-                                <li>24 NFC/QR tags</li>
-                                <li>Unlimited visitor tracking</li>
-                                <li>Basic analytics dashboard</li>
-                                <li>Email support</li>
+                            <h3 class="text-2xl font-bold mb-2">Basic Package</h3>
+                            <p class="text-gray-600 mb-4">Perfect for agencies with up to 24 properties</p>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-4xl font-bold">$475</span>
+                                <span class="text-gray-500">/month</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <ul class="space-y-3 text-gray-600">
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span>24 NFC/QR tags</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span>Unlimited visitor tracking</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span>Basic analytics dashboard</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span>Email support</span>
+                                </li>
                             </ul>
                         </div>
                         <div class="mt-4 md:mt-0">
-                            <a href="#" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                            <a href="#contact" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition duration-300 inline-block">
                                 Get Started
                             </a>
                         </div>
                     </div>
                 </div>
-                <div class="mt-8 text-center">
-                    <p class="text-gray-600">Need more tags? Additional 12 tags for just $200 CAD/month</p>
+                <div class="mt-8 text-center text-gray-600">
+                    <p>Need more tags? Additional 12 tags for just $200/month</p>
+                    <p class="text-sm mt-2">* All prices are in CAD</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 transform translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
+                    Get in Touch
+                </span>
+                <h2 class="text-4xl font-bold mb-6">Start Your Journey Today</h2>
+                <p class="text-xl text-gray-600">
+                    Fill out the form below and we'll get back to you within 24 hours.
+                </p>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <form class="bg-white rounded-2xl shadow-lg p-8">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                            <input type="text" id="name" name="name" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                        <input type="text" id="company" name="company" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="mt-6">
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                        <textarea id="message" name="message" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-700 transition duration-300">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
@@ -237,6 +490,9 @@
                     <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
                     <a href="#" class="text-gray-400 hover:text-white">Contact Us</a>
                 </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+                <p>&copy; {{ date('Y') }} Touch Estate. All rights reserved.</p>
             </div>
         </div>
     </footer>
