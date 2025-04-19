@@ -10,4 +10,9 @@ class SpaController extends Controller
     {
         return view('spa');
     }
+
+    public function landingPage(): View
+    {
+        return view('landing');
+    }
 }

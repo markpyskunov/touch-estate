@@ -15,6 +15,8 @@ use Spatie\RouteAttributes\RouteRegistrar;
 |
 */
 
+Route::get('/', [SpaController::class, 'landingPage']);
+
 // SPA Routes - all routes will be handled by the SPA except /api/*
 Route::get('{any}', [SpaController::class, 'index'])->where('any', '^(?!api).*$');
 
