@@ -267,7 +267,7 @@
                 <div class="lg:w-1/2 space-y-8">
                     <div class="inline-block fade-in stagger-delay-1">
                         <span class="hero-badge px-4 py-2 rounded-full text-sm font-semibold mb-6 inline-block">
-                            🚀 The Future of Real Estate Analytics
+                            🚀 Turn Every Property Visit Into a Digital Lead
                         </span>
                     </div>
                     <h1 class="text-5xl lg:text-6xl font-bold leading-tight fade-in stagger-delay-2">
@@ -814,7 +814,7 @@
                 <span class="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
                     Simple Pricing
                 </span>
-                <h2 class="text-4xl font-bold mb-6">Choose Your Plan</h2>
+                <h2 class="text-4xl font-bold mb-6">Flat Plan Pricing</h2>
                 <p class="text-xl text-gray-600">
                     Start with our basic package and scale as you grow.
                 </p>
@@ -825,7 +825,6 @@
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <div class="text-center w-full md:w-auto">
                             <h3 class="text-2xl font-bold mb-2">Basic Package</h3>
-                            <p class="text-gray-600 mb-4">Perfect for agencies with up to <br>24 properties simultaneously</p>
                             <div class="flex items-baseline justify-center gap-2">
                                 <span class="text-4xl font-bold">$475</span>
                                 <span class="text-gray-500">/month</span>
@@ -837,25 +836,31 @@
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>24 NFC/QR tags</span>
+                                    <span>24 Smart QR/NFC Property Tags</span>
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>Unlimited visitor tracking</span>
+                                    <span>Branded digital property pages (no app required)</span>
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>Basic analytics dashboard</span>
+                                    <span>Real-time visitor analytics & engagement tracking</span>
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>Email support</span>
+                                    <span>Visitor subscription capture + lead export</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <span>Integrated mortgage broker/referral section</span>
                                 </li>
                             </ul>
                         </div>
