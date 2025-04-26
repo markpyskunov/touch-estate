@@ -235,9 +235,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="room in visitStore.property.rooms" :key="room.id">
+                <tr v-for="room in roomsWithLevelDisplay" :key="room.id">
                   <td style="width: 120px">
-                    <div class="d-flex align-center">
+                    <div class="d-flex align-center" v-if="room.showLevel">
                       <v-icon size="20" class="me-2">{{ getLevelIcon(room.level) }}</v-icon>
                       {{ getLevelLabel(room.level) }}
                     </div>
@@ -764,6 +764,21 @@ const activeFeatures = computed(() => {
         return true;
     })
 })
+
+const roomsWithLevelDisplay = computed(() => {
+    if (!visitStore.property) {
+        return [];
+    }
+
+    return visitStore.property.rooms.map((room, index) => {
+        const showLevel = index === 0 || room.level !== visitStore.property.rooms[index - 1].level;
+        return {
+            ...room,
+            showLevel
+        };
+    });
+})
+
 const finalPrice = computed(() => {
     if (!visitStore.property) {
         return 0;
