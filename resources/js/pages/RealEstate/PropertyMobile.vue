@@ -58,8 +58,14 @@
             <template v-slot:activator="{ props }">
               <div v-bind="props">
                 <v-icon size="28">mdi-garage</v-icon>
-                <div class="text-subtitle-1 font-weight-medium">
+                <div class="text-subtitle-1 font-weight-medium" v-if="visitStore.property.rooms.filter(r => r.type === 'parking').length && visitStore.property.rooms.filter(r => r.type === 'garage').length">
                   {{ visitStore.property.rooms.filter(r => r.type === 'parking').length }} + {{ visitStore.property.rooms.filter(r => r.type === 'garage').length }}
+                </div>
+                <div class="text-subtitle-1 font-weight-medium" v-else-if="visitStore.property.rooms.filter(r => r.type === 'parking').length && !visitStore.property.rooms.filter(r => r.type === 'garage').length">
+                  {{ visitStore.property.rooms.filter(r => r.type === 'parking').length }}
+                </div>
+                <div class="text-subtitle-1 font-weight-medium" v-else>
+                  {{ visitStore.property.rooms.filter(r => r.type === 'garage').length }}
                 </div>
                 <div class="text-caption text-grey">Parking</div>
               </div>
@@ -97,7 +103,7 @@
 
       <!-- Primary CTA -->
       <v-btn
-        color="primary"
+        :color="visitStore.property.is_subscribed ? 'error' : 'primary'"
         block
         size="large"
         class="text-none mb-3"
@@ -154,16 +160,46 @@
           <v-btn icon @click="showSubscribeDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
-          <v-toolbar-title>Subscribe to Updates</v-toolbar-title>
+          <v-toolbar-title>{{ visitStore.property.is_subscribed ? 'Unsubscribe from Updates' : 'Subscribe to Updates' }}</v-toolbar-title>
         </v-toolbar>
 
         <v-card-text class="pa-4">
           <p class="text-body-1 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
 
-          <v-form @submit.prevent="visitStore.toggleSubscribe">
+          <v-btn
+            :color="visitStore.property.is_subscribed ? 'error' : 'primary'"
+            type="submit"
+            block
+            size="large"
+            class="text-none"
+            elevation="2"
+            @click="visitStore.toggleSubscribe"
+          >
+            {{ visitStore.property.is_subscribed ? 'Unsubscribe from updates' : 'Subscribe to updates' }}
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- Notes Dialog -->
+    <v-dialog v-model="showNotesDialog" width="100%" fullscreen>
+      <v-card>
+        <v-toolbar color="primary">
+          <v-btn icon @click="showNotesDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Your Notes</v-toolbar-title>
+        </v-toolbar>
+
+        <v-card-text class="pa-4">
+          <!-- Add Note Form -->
+          <div class="text-h6 mb-4">Add Note</div>
+          <v-form @submit.prevent="() => {
+            visitStore.storeNote(note);
+            note = '';
+          }">
             <v-textarea
               v-model="note"
-              label="Add New Note"
               placeholder="Add a note about this property..."
               variant="outlined"
               density="comfortable"
@@ -176,16 +212,45 @@
               color="primary"
               type="submit"
               block
-              size="large"
               class="text-none"
-              elevation="2"
+              :disabled="note.length === 0"
             >
-              {{ visitStore.property.is_subscribed ? 'Unsubscribe from updates' : 'Subscribe to updates' }}
+              Save Note
             </v-btn>
           </v-form>
+
+          <v-divider class="my-6" />
+
+          <!-- Previous Notes -->
+          <div v-if="visitStore.property.notes.length > 0" class="mb-6">
+            <div class="text-h6 mb-3">Your Notes</div>
+            <v-timeline density="compact" align="start">
+              <v-timeline-item
+                v-for="note in visitStore.property.notes"
+                :key="note.id"
+                dot-color="primary"
+                size="small"
+              >
+                <div class="text-caption text-grey mb-1">{{ formatDate(new Date(note.created_at)) }}</div>
+                <div class="text-body-2">{{ note.note }}</div>
+              </v-timeline-item>
+            </v-timeline>
+          </div>
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <!-- Notes Button -->
+    <v-btn
+      color="primary"
+      variant="outlined"
+      block
+      size="large"
+      class="text-none mb-6"
+      @click="showNotesDialog = true"
+    >
+      View Notes
+    </v-btn>
 
     <!-- Main Content Section -->
     <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
@@ -212,54 +277,6 @@
             <span v-else-if="typeof feature.value === 'string'">{{ $t(`locations.features.${feature.feature}`) }}: {{ feature.value }}</span>
           </v-chip>
         </div>
-      </v-card-text>
-    </v-card>
-
-    <!-- Notes Section -->
-    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
-      <v-card-text>
-        <!-- Previous Notes -->
-        <div v-if="visitStore.property.notes.length > 0" class="mb-6">
-          <div class="text-h6 mb-3">Your Notes</div>
-          <v-timeline density="compact" align="start">
-            <v-timeline-item
-              v-for="note in visitStore.property.notes"
-              :key="note.id"
-              dot-color="primary"
-              size="small"
-            >
-              <div class="text-caption text-grey mb-1">{{ formatDate(new Date(note.created_at)) }}</div>
-              <div class="text-body-2">{{ note.note }}</div>
-            </v-timeline-item>
-          </v-timeline>
-        </div>
-
-        <!-- Add Note Form -->
-        <div class="text-h6 mb-4">Add Note</div>
-        <v-form @submit.prevent="() => {
-          visitStore.storeNote(note);
-          note = '';
-        }">
-          <v-textarea
-            v-model="note"
-            placeholder="Add a note about this property..."
-            variant="outlined"
-            density="comfortable"
-            rows="3"
-            class="mb-4"
-            hide-details
-          ></v-textarea>
-
-          <v-btn
-            color="primary"
-            type="submit"
-            block
-            class="text-none"
-            :disabled="note.length === 0"
-          >
-            Save Note
-          </v-btn>
-        </v-form>
       </v-card-text>
     </v-card>
 
@@ -522,6 +539,7 @@ const visitStore = useVisitStore();
 const useMetric = ref(false);
 const note = ref('');
 const showSubscribeDialog = ref(false);
+const showNotesDialog = ref(false);
 
 const activeFeatures = computed(() => {
     if (!visitStore.property) {
