@@ -1,5 +1,5 @@
 <template>
-  <v-container class="py-0 px-4" fluid v-if="propertyMapperStore.mapped">
+  <v-container class="py-0 px-4" fluid v-if="visitStore.property">
     <!-- Image Slider Section -->
     <div class="mx-n4">
       <v-carousel
@@ -9,9 +9,9 @@
         show-arrows="hover"
       >
         <v-carousel-item
-          v-for="(image, index) in allImages"
+          v-for="(image, index) in visitStore.property.location_images ?? []"
           :key="index"
-          :src="image.url"
+          :src="image.source"
           cover
         ></v-carousel-item>
       </v-carousel>
@@ -33,25 +33,34 @@
       <div class="d-flex justify-space-between mb-4">
         <div class="text-center">
           <v-icon size="28">mdi-bed</v-icon>
-          <div class="text-subtitle-1 font-weight-medium">{{ listing.bedrooms }}</div>
+          <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.rooms.filter(r => r.type === 'bedroom').length }}</div>
           <div class="text-caption text-grey">Bedrooms</div>
         </div>
         <div class="text-center">
           <v-icon size="28">mdi-shower</v-icon>
-          <div class="text-subtitle-1 font-weight-medium">{{ listing.bathrooms }}</div>
+          <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.rooms.filter(r => r.type === 'bathroom').length }}</div>
           <div class="text-caption text-grey">Bathrooms</div>
         </div>
-        <div class="text-center">
+        <div class="text-center" v-if="visitStore.property.area_sqft">
           <v-icon size="28">mdi-ruler-square</v-icon>
-          <div class="text-subtitle-1 font-weight-medium">{{ listing.area }}</div>
+          <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.area_sqft }}</div>
           <div class="text-caption text-grey">Sq Ft</div>
         </div>
-        <div class="text-center">
-          <v-tooltip text="2 Garage + 1 Parking" location="top">
+        <div class="text-center" v-if="visitStore.property.rooms.filter(r => r.type === 'parking').length || visitStore.property.rooms.filter(r => r.type === 'garage').length">
+          <v-tooltip :text="[
+              visitStore.property.rooms.filter(r => r.type === 'parking').length
+                  ? `${visitStore.property.rooms.filter(r => r.type === 'parking').length} Parking lot${visitStore.property.rooms.filter(r => r.type === 'parking').length > 1 ? 's' : ''}`
+                  : null,
+              visitStore.property.rooms.filter(r => r.type === 'garage').length
+                  ? `${visitStore.property.rooms.filter(r => r.type === 'garage').length} Garage`
+                  : null,
+          ].filter(r => !!r).join(' + ')" location="top">
             <template v-slot:activator="{ props }">
               <div v-bind="props">
                 <v-icon size="28">mdi-garage</v-icon>
-                <div class="text-subtitle-1 font-weight-medium">2+1</div>
+                <div class="text-subtitle-1 font-weight-medium">
+                  {{ visitStore.property.rooms.filter(r => r.type === 'parking').length }} + {{ visitStore.property.rooms.filter(r => r.type === 'garage').length }}
+                </div>
                 <div class="text-caption text-grey">Parking</div>
               </div>
             </template>
@@ -61,24 +70,25 @@
 
       <!-- Price and Favorite -->
       <div class="d-flex justify-space-between align-center mb-4">
-        <div class="text-h3 text-primary font-weight-medium">${{ listing.price }}</div>
+        <div class="text-h3 text-primary font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_after || visitStore.property.pricing.price_before) }}</div>
         <v-btn
           icon
           size="large"
-          color="error"
+          :color="visitStore.property.is_favorite ? 'error' : 'default'"
           variant="text"
+          @click="visitStore.toggleFavorite"
         >
-          <v-icon>mdi-heart-outline</v-icon>
+          <v-icon>{{ visitStore.property.is_favorite ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
         </v-btn>
       </div>
 
       <!-- Address Info -->
       <div class="mb-4">
-        <div class="text-h6">{{ listing.address }}</div>
-        <div class="text-subtitle-1 text-grey">{{ listing.city }}, {{ listing.province }} {{ listing.postalCode }}</div>
+        <div class="text-h6">{{ visitStore.property.address.street_number }} {{ visitStore.property.address.route }}</div>
+        <div class="text-subtitle-1 text-grey">{{ visitStore.property.address.administrative_area_level_2 }}, {{ visitStore.property.address.administrative_area_level_1 }}, {{ visitStore.property.address.postal_code }}</div>
         <div class="d-flex align-center mt-2">
           <span class="text-grey me-2">MLS® Number:</span>
-          <span>{{ listing.mlsNumber }}</span>
+          <span>{{ visitStore.property.mls }}</span>
         </div>
       </div>
 
@@ -91,7 +101,7 @@
         elevation="2"
         @click="openSubscribeDialog"
       >
-        Subscribe to Updates
+        {{ visitStore.property.is_subscribed ? 'Unsubscribe from updates' : 'Subscribe to updates' }}
       </v-btn>
 
       <!-- Secondary CTA -->
@@ -108,24 +118,25 @@
     </v-card>
 
     <!-- Agent Info Section -->
-    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
+    <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)" v-if="visitStore.property.realtor">
       <v-card-text class="pt-4">
         <!-- Agent Info -->
         <div class="d-flex align-center">
           <v-avatar size="60" class="me-4">
-            <v-img src="https://placehold.co/200x200/333/fff?text=Agent" />
+            <v-img v-if="visitStore.property.realtor.contact.avatar" :src="visitStore.property.realtor.contact.avatar" />
+            <v-img v-else src="https://placehold.co/200x200/333/fff?text=Agent" />
           </v-avatar>
           <div>
-            <div class="text-h6">John Smith</div>
+            <div class="text-h6">{{ visitStore.property.realtor.first_name }} {{ visitStore.property.realtor.last_name }}</div>
             <div class="text-subtitle-2 text-grey">Real Estate Agent</div>
             <div class="mt-2">
               <div class="d-flex align-center mb-1">
                 <v-icon size="small" class="me-2">mdi-email</v-icon>
-                <a href="mailto:john.smith@realestate.com" class="text-decoration-none">john.smith@realestate.com</a>
+                <a :href="`mailto:${visitStore.property.realtor.contact.email}`" class="text-decoration-none">{{ visitStore.property.realtor.contact.email }}</a>
               </div>
               <div class="d-flex align-center">
                 <v-icon size="small" class="me-2">mdi-phone</v-icon>
-                <a href="tel:+12505550123" class="text-decoration-none">+1 (250) 555-0123</a>
+                <a :href="`tel:${visitStore.property.realtor.contact.phone}`" class="text-decoration-none">{{ visitStore.property.realtor.contact.phone }}</a>
               </div>
             </div>
           </div>
@@ -146,9 +157,9 @@
         <v-card-text class="pa-4">
           <p class="text-body-1 mb-4">By subscribing, you'll automatically receive updates about price changes and availability status for this property.</p>
 
-          <v-form @submit.prevent="subscribeToProperty">
+          <v-form @submit.prevent="visitStore.toggleSubscribe">
             <v-textarea
-              v-model="subscribeForm.personalNote"
+              v-model="note"
               label="Add New Note"
               placeholder="Add a note about this property..."
               variant="outlined"
@@ -166,7 +177,7 @@
               class="text-none"
               elevation="2"
             >
-              Subscribe to Updates
+              {{ visitStore.property.is_subscribed ? 'Unsubscribe from updates' : 'Subscribe to updates' }}
             </v-btn>
           </v-form>
         </v-card-text>
@@ -175,25 +186,27 @@
 
     <!-- Main Content Section -->
     <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
-      <v-card-title class="text-h5">{{ listing.title }}</v-card-title>
-      <v-card-subtitle class="text-h6">{{ listing.address }}</v-card-subtitle>
+      <v-card-title class="text-h5">Main information</v-card-title>
+      <v-card-subtitle class="text-h6">{{ visitStore.property.address.formatted_address }}</v-card-subtitle>
 
-      <v-card-text>
+      <v-card-text v-if="visitStore.property.description">
         <div class="text-h6 mb-4">Description</div>
-        <p class="text-body-1">{{ listing.description }}</p>
+        <p class="text-body-1">{{ visitStore.property.description }}</p>
       </v-card-text>
 
       <v-card-text>
         <div class="text-h6 mb-4">Features</div>
         <div class="d-flex flex-wrap" style="gap: 8px">
           <v-chip
-            v-for="(feature, index) in listing.features"
+            v-for="(feature, index) in activeFeatures"
             :key="index"
             class="ma-1"
             color="primary"
             variant="outlined"
           >
-            {{ feature }}
+            <span v-if="typeof feature.value === 'boolean'">{{ $t(`locations.features.${feature.feature}`) }}</span>
+            <span v-else-if="typeof feature.value === 'number'">{{ $t(`locations.features.${feature.feature}`) }}: {{ feature.value }}</span>
+            <span v-else-if="typeof feature.value === 'string'">{{ $t(`locations.features.${feature.feature}`) }}: {{ feature.value }}</span>
           </v-chip>
         </div>
       </v-card-text>
@@ -203,26 +216,29 @@
     <v-card class="mb-6" flat style="border: 1px solid rgba(0,0,0,0.12)">
       <v-card-text>
         <!-- Previous Notes -->
-        <div v-if="previousNotes.length > 0" class="mb-6">
+        <div v-if="visitStore.property.notes.length > 0" class="mb-6">
           <div class="text-h6 mb-3">Your Notes</div>
           <v-timeline density="compact" align="start">
             <v-timeline-item
-              v-for="note in previousNotes"
+              v-for="note in visitStore.property.notes"
               :key="note.id"
               dot-color="primary"
               size="small"
             >
-              <div class="text-caption text-grey mb-1">{{ formatDate(note.timestamp) }}</div>
-              <div class="text-body-2">{{ note.content }}</div>
+              <div class="text-caption text-grey mb-1">{{ formatDate(new Date(note.created_at)) }}</div>
+              <div class="text-body-2">{{ note.note }}</div>
             </v-timeline-item>
           </v-timeline>
         </div>
 
         <!-- Add Note Form -->
         <div class="text-h6 mb-4">Add Note</div>
-        <v-form @submit.prevent="addNote">
+        <v-form @submit.prevent="() => {
+          visitStore.storeNote(note);
+          note = '';
+        }">
           <v-textarea
-            v-model="noteForm.content"
+            v-model="note"
             placeholder="Add a note about this property..."
             variant="outlined"
             density="comfortable"
@@ -236,6 +252,7 @@
             type="submit"
             block
             class="text-none"
+            :disabled="note.length === 0"
           >
             Save Note
           </v-btn>
@@ -245,9 +262,9 @@
 
     <!-- Additional Images -->
     <v-row class="mb-6">
-      <v-col cols="6" v-for="(image, index) in listing.images" :key="index">
+      <v-col cols="6" v-for="(image, index) in visitStore.property.location_images.filter(i => i.is_featured)" :key="index">
         <v-img
-          :src="image.url"
+          :src="image.source"
           height="150"
           cover
           class="rounded"
@@ -296,9 +313,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="room in rooms" :key="room.id">
+            <tr v-for="room in roomsWithLevelDisplay" :key="room.id">
               <td>
-                <v-icon size="20" :title="room.level">{{ getLevelIcon(room.level) }}</v-icon>
+                <v-icon size="20" :title="getLevelLabel(room.level)" v-if="room.showLevel">{{ getLevelIcon(room.level) }}</v-icon>
               </td>
               <td>
                 <v-tooltip :text="room.name" location="top">
@@ -313,7 +330,7 @@
                   </template>
                 </v-tooltip>
               </td>
-              <td class="text-no-wrap">{{ formatDimensions(room.dimensions) }}</td>
+              <td class="text-no-wrap">{{ printRoomSize(room) }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -330,21 +347,21 @@
           size="small"
           class="font-weight-regular"
         >
-          {{ documents.length }} files
+          {{ visitStore.property.documents.length }} files
         </v-chip>
       </v-card-title>
 
       <v-card-text>
         <v-list density="compact">
           <v-list-item
-            v-for="doc in documents"
-            :key="doc.id"
-            :href="doc.url"
+            v-for="doc in visitStore.property.documents"
+            :key="`document_${doc.id}`"
+            :href="`/documents?document=${doc.id}`"
             target="_blank"
             class="px-2"
           >
             <template v-slot:prepend>
-              <v-icon :color="doc.iconColor" size="20" class="me-2">{{ doc.icon }}</v-icon>
+              <v-icon :color="doc.icon_color" size="20" class="me-2">{{ doc.icon }}</v-icon>
             </template>
 
             <v-list-item-title class="text-body-2">{{ doc.name }}</v-list-item-title>
@@ -486,7 +503,7 @@
     <div class="mx-n4">
       <v-card class="map-card">
         <InteractiveMap
-          :center="coordinates"
+          :center="{ lat: visitStore.property.address.latitude, lng: visitStore.property.address.longitude }"
           :zoom="15"
         />
       </v-card>
@@ -495,299 +512,131 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
-import { useRoute } from 'vue-router'
+import {ref, computed} from 'vue'
 import InteractiveMap from '@/components/InteractiveMap.vue'
-import {usePropertyMapperStore} from "@/stores/propertyMapper";
+import {useVisitStore} from "@/stores/visit";
+import {formatCurrency, formatDate} from "@/shared/helpers";
+import {LocationRoom} from "@/contracts/properties";
 
-// Reuse the same interfaces and data from Listing.vue
-const route = useRoute()
-const propertyMapperStore = usePropertyMapperStore();
+const visitStore = useVisitStore();
+const useMetric = ref(false);
+const note = ref('');
+const showSubscribeDialog = ref(false);
 
-const currentImageIndex = ref(0)
+const activeFeatures = computed(() => {
+    if (!visitStore.property) {
+        return [];
+    }
 
-const listing = ref({
-  title: 'Main information',
-  price: '1,225,000',
-  address: '1110 Samar Cres',
-  city: 'Langford',
-  province: 'British Columbia',
-  postalCode: 'V9B 0A1',
-  mainImage: '/images/properties/exterior-front.jpg',
-  images: [
-    { url: '/images/properties/living-room-1.jpg' },
-    { url: '/images/properties/kitchen-1.jpg' },
-    { url: '/images/properties/bedroom-1.jpg' },
-    { url: '/images/properties/bathroom.jpg' }
-  ],
-  additionalImages: [
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+4' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+5' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+6' },
-    { url: 'https://placehold.co/600x400/333/fff?text=Property+Image+7' },
-  ],
-  description: 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
-  features: [
-    'Modern Kitchen',
-    'Hardwood Floors',
-    'Fireplace',
-    'Central Air',
-    'Large Backyard',
-    'Updated Bathrooms',
-    'Walk-in Closets',
-    'Energy Efficient',
-  ],
-  mapImage: `https://maps.googleapis.com/maps/api/staticmap?center=1110+Samar+Cres,Langford,BC&zoom=15&size=600x300&markers=color:red%7C1110+Samar+Cres,Langford,BC&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`,
-  bedrooms: 4,
-  bathrooms: 3,
-  area: 2500,
-  mlsNumber: '995201',
-})
+    return visitStore.property.features.filter(feature => {
+        if (typeof feature.value === 'boolean') {
+            return feature.value;
+        }
 
-const subscribeForm = ref({
-  personalNote: ''
-})
-
-// Combine all images for the carousel
-const allImages = ref([
-  {
-    url: '/images/properties/exterior-front.jpg',
-    title: 'Front View'
-  },
-  {
-    url: '/images/properties/living-room-1.jpg',
-    title: 'Living Room'
-  },
-  {
-    url: '/images/properties/kitchen-1.jpg',
-    title: 'Kitchen'
-  },
-  {
-    url: '/images/properties/bedroom-1.jpg',
-    title: 'Bedroom'
-  },
-  {
-    url: '/images/properties/bathroom.jpg',
-    title: 'Bathroom'
-  }
-])
-
-const subscribeToProperty = () => {
-  console.log('Subscription submitted:', subscribeForm.value)
-}
-
-const useMetric = ref(true)
-
-const rooms = ref([
-  {
-    id: 1,
-    level: 'Main Floor',
-    name: 'Living Room',
-    dimensions: { width: 6.1, length: 7.3 }
-  },
-  {
-    id: 2,
-    level: 'Main Floor',
-    name: 'Kitchen',
-    dimensions: { width: 4.2, length: 5.5 }
-  },
-  {
-    id: 3,
-    level: 'Main Floor',
-    name: 'Dining Room',
-    dimensions: { width: 3.9, length: 4.8 }
-  },
-  {
-    id: 4,
-    level: 'Upper Floor',
-    name: 'Master Bedroom',
-    dimensions: { width: 4.5, length: 5.8 }
-  },
-  {
-    id: 5,
-    level: 'Upper Floor',
-    name: 'Bedroom 2',
-    dimensions: { width: 3.6, length: 4.2 }
-  },
-  {
-    id: 6,
-    level: 'Upper Floor',
-    name: 'Family Bathroom',
-    dimensions: { width: 2.8, length: 3.2 }
-  },
-  {
-    id: 7,
-    level: 'Third Floor',
-    name: 'Bedroom 3',
-    dimensions: { width: 3.3, length: 4.0 }
-  },
-  {
-    id: 8,
-    level: 'Third Floor',
-    name: 'Study Room',
-    dimensions: { width: 3.0, length: 3.5 }
-  },
-  {
-    id: 9,
-    level: 'Third Floor',
-    name: 'Half Bath',
-    dimensions: { width: 1.8, length: 2.4 }
-  }
-])
-
-const formatDimensions = (dimensions: { width: number, length: number }): string => {
-  if (useMetric.value) {
-    return `${dimensions.width.toFixed(1)}m × ${dimensions.length.toFixed(1)}m`
-  } else {
-    const widthFt = dimensions.width * 3.28084
-    const lengthFt = dimensions.length * 3.28084
-    return `${widthFt.toFixed(1)}ft × ${lengthFt.toFixed(1)}ft`
-  }
-}
-
-const getLevelIcon = (level: string): string => {
-  switch (level) {
-    case 'Main Floor':
-      return 'mdi-home-floor-1'
-    case 'Upper Floor':
-      return 'mdi-home-floor-2'
-    case 'Third Floor':
-      return 'mdi-home-floor-3'
-    case 'Basement':
-      return 'mdi-home-floor-b'
-    default:
-      return 'mdi-home-floor-1'
-  }
-}
-
-interface Note {
-  id: number
-  content: string
-  timestamp: Date
-}
-
-const noteForm = ref({
-  content: ''
-})
-
-const previousNotes = ref<Note[]>([
-  {
-    id: 1,
-    content: "Great location, close to schools and parks. Need to check the garage size.",
-    timestamp: new Date('2024-03-15T14:30:00')
-  },
-  {
-    id: 2,
-    content: "Called agent about the roof age - was replaced in 2020.",
-    timestamp: new Date('2024-03-16T09:15:00')
-  }
-])
-
-const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric'
-  }).format(date)
-}
-
-const addNote = () => {
-  if (noteForm.value.content.trim()) {
-    previousNotes.value.unshift({
-      id: Date.now(),
-      content: noteForm.value.content,
-      timestamp: new Date()
+        return true;
     })
-    noteForm.value.content = ''
-  }
+})
+
+const roomsWithLevelDisplay = computed(() => {
+    if (!visitStore.property) {
+        return [];
+    }
+
+    return visitStore.property.rooms.map((room, index) => {
+        const showLevel = index === 0 || room.level !== visitStore.property.rooms[index - 1].level;
+        return {
+            ...room,
+            showLevel
+        };
+    });
+})
+
+const getLevelIcon = (level: number): string => {
+    switch (level) {
+        case -2:
+            return 'mdi-home-negative-1'
+        case -1:
+            return 'mdi-home-floor-l'
+        case 1:
+            return 'mdi-home-floor-1'
+        case 2:
+            return 'mdi-home-floor-2'
+        case 3:
+            return 'mdi-home-floor-3'
+        case 4:
+            return 'mdi-home-floor-4'
+        case 0:
+            return 'mdi-home-floor-b'
+        default:
+            return 'mdi-home-floor-1'
+    }
 }
 
-interface Document {
-  id: number
-  name: string
-  url: string
-  size: string
-  icon: string
-  iconColor: string
+const getLevelLabel = (level: number): string => {
+    switch (level) {
+        case -2:
+            return 'Underground 2'
+        case -1:
+            return 'Underground'
+        case 1:
+            return '1st floor'
+        case 2:
+            return '2nd floor'
+        case 3:
+            return '3rd floor'
+        case 4:
+            return '4th floor'
+        case 0:
+            return 'basement'
+        default:
+            return '1st floor'
+    }
 }
 
-const documents = ref<Document[]>([
-  {
-    id: 1,
-    name: 'Property Disclosure Statement.pdf',
-    url: '#',
-    size: '2.4 MB',
-    icon: 'mdi-file-document-outline',
-    iconColor: 'primary'
-  },
-  {
-    id: 2,
-    name: 'Floor Plans.pdf',
-    url: '#',
-    size: '5.1 MB',
-    icon: 'mdi-floor-plan',
-    iconColor: 'success'
-  },
-  {
-    id: 3,
-    name: 'Property Survey.pdf',
-    url: '#',
-    size: '3.8 MB',
-    icon: 'mdi-map-outline',
-    iconColor: 'info'
-  },
-  {
-    id: 4,
-    name: 'Title Certificate.pdf',
-    url: '#',
-    size: '1.2 MB',
-    icon: 'mdi-certificate-outline',
-    iconColor: 'warning'
-  }
-])
+const printRoomSize = (room: LocationRoom) => {
+    if (!useMetric.value) {
+        return `${room.width_ft} x ${room.length_ft}`
+    }
 
-const showSubscribeDialog = ref(false)
-
-const openSubscribeDialog = () => {
-  showSubscribeDialog.value = true
+    return `${room.width_meters} x ${room.length_meters}`
 }
 
 const calculatorSettings = ref({
-  downPaymentPercent: 10,
-  interestRate: 4.00,
-  amortizationYears: 25
+    downPaymentPercent: 10,
+    interestRate: 4.00,
+    amortizationYears: 25
 })
 
 const formatPrice = (value: number): string => {
-  return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
 const calculateDownPayment = (): number => {
-  const price = parseFloat(listing.value.price.replace(/,/g, ''))
-  return price * (calculatorSettings.value.downPaymentPercent / 100)
+    const price = visitStore.property.pricing.price_after || visitStore.property.pricing.price_before;
+    return price * (calculatorSettings.value.downPaymentPercent / 100)
 }
 
 const calculateLoanAmount = (): number => {
-  const price = parseFloat(listing.value.price.replace(/,/g, ''))
-  return price - calculateDownPayment()
+    const price = visitStore.property.pricing.price_after || visitStore.property.pricing.price_before;
+    return price - calculateDownPayment()
 }
 
 const calculateMonthlyPayment = (): number => {
-  const loanAmount = calculateLoanAmount()
-  const monthlyRate = calculatorSettings.value.interestRate / 100 / 12
-  const numberOfPayments = calculatorSettings.value.amortizationYears * 12
+    const loanAmount = calculateLoanAmount()
+    const monthlyRate = calculatorSettings.value.interestRate / 100 / 12
+    const numberOfPayments = calculatorSettings.value.amortizationYears * 12
 
-  return (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
+    return (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
          (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
 }
 
 const calculateTotalMonthly = (): number => {
-  return calculateMonthlyPayment() + 450 + 350 // Adding property tax and maintenance
+    return calculateMonthlyPayment() + 450 + 350 // Adding property tax and maintenance
 }
 
-// Replace the mapImage property with coordinates
-const coordinates = { lat: 48.4536589, lng: -123.3749017 }
+const openSubscribeDialog = () => {
+    showSubscribeDialog.value = true
+}
 </script>
 
 <style scoped>
