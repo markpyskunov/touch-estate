@@ -30,7 +30,7 @@
       }"
     >
       <!-- Property Stats -->
-      <div class="d-flex justify-space-between mb-4">
+      <div class="d-flex justify-space-around mb-4">
         <div class="text-center">
           <v-icon size="28">mdi-bed</v-icon>
           <div class="text-subtitle-1 font-weight-medium">{{ visitStore.property.rooms.filter(r => r.type === 'bedroom').length }}</div>
@@ -70,7 +70,10 @@
 
       <!-- Price and Favorite -->
       <div class="d-flex justify-space-between align-center mb-4">
-        <div class="text-h3 text-primary font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_after || visitStore.property.pricing.price_before) }}</div>
+        <div class="d-flex flex-column">
+          <div v-if="visitStore.property.pricing.price_before && visitStore.property.pricing.price_after" class="text-h5 text-decoration-line-through text-disabled font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_before) }}</div>
+          <div class="text-h3 text-primary font-weight-medium">{{ formatCurrency(visitStore.property.pricing.price_after || visitStore.property.pricing.price_before) }}</div>
+        </div>
         <v-btn
           icon
           size="large"
@@ -287,12 +290,9 @@
           <v-switch
             v-model="useMetric"
             hide-details
-            density="compact"
             color="primary"
-            inset
             class="mt-0 pt-0"
-            style="margin-top: -8px !important"
-          ></v-switch>
+          />
           <span
             class="text-caption ms-2 d-flex align-center"
             style="line-height: 1"
