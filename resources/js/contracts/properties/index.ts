@@ -1,6 +1,5 @@
 import {Address} from "@/contracts/address";
 import {Campaign} from "@/contracts/campaigns";
-import {VisitSource} from "@/stores/visit";
 import {OwnerUser} from "@/contracts/users";
 
 interface LocationImage {
@@ -39,8 +38,18 @@ interface LocationMeta {
     updated_at: string;
 }
 
+type RoomType =
+    | 'bedroom'
+    | 'bathroom'
+    | 'flex'
+    | 'den'
+    | 'parking'
+    | 'garage'
+    | 'yard'
+
 export interface LocationRoom {
     id: string;
+    type: RoomType;
     level: number;
     name: string;
     area_sqft: number;

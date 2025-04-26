@@ -30,7 +30,7 @@ onMounted(async () => {
     try {
         loadingStore.show('Loading property details...')
 
-        if (!visitStore.property && route.params['id']) {
+        if (route.params['id']) {
             await visitStore.fetchPropertyUsingVID(
                 route.params['id'] as string,
             );

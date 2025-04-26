@@ -173,9 +173,9 @@
               color="primary"
               variant="outlined"
             >
-                <span v-if="typeof feature.value === 'boolean'">{{ feature.feature }}</span>
-                <span v-else-if="typeof feature.value === 'number'">{{ feature.feature }}: {{ feature.value }}</span>
-                <span v-else-if="typeof feature.value === 'string'">{{ feature.feature }}: {{ feature.value }}</span>
+                <span v-if="typeof feature.value === 'boolean'">{{ $t(`locations.features.${feature.feature}`) }}</span>
+                <span v-else-if="typeof feature.value === 'number'">{{ $t(`locations.features.${feature.feature}`) }}: {{ feature.value }}</span>
+                <span v-else-if="typeof feature.value === 'string'">{{ $t(`locations.features.${feature.feature}`) }}: {{ feature.value }}</span>
             </v-chip>
           </v-card-text>
         </v-card>
@@ -387,7 +387,7 @@
             <v-divider class="mb-6" />
 
             <!-- Recent Visits -->
-            <div class="d-flex justify-space-between align-center mb-4">
+            <div class="d-flex justify-space-between align-center mb-4" v-if="visitStore.property.visits.length">
               <div class="text-h6">Your Visits</div>
               <v-chip
                 color="primary"
@@ -402,8 +402,8 @@
             <div class="visits-timeline" style="max-height: 200px; overflow-y: auto;">
               <v-timeline density="compact" align="start">
                 <v-timeline-item
-                  v-for="visit in visitStore.property.visits"
-                  :key="visit.id"
+                  v-for="(visit, index) in visitStore.property.visits"
+                  :key="`visit_${index}`"
                   :dot-color="visit.type === 'nfc' ? 'primary' : visit.type === 'qr' ? 'success' : 'info'"
                   size="small"
                 >
@@ -452,8 +452,8 @@
         <v-list density="compact">
           <v-list-item
             v-for="doc in visitStore.property.documents"
-            :key="doc.id"
-            :href="doc.url"
+            :key="`document_${doc.id}`"
+            :href="`/documents?document=${doc.id}`"
             target="_blank"
             class="px-2"
           >
@@ -673,7 +673,6 @@ const visitStore = useVisitStore();
 const loadingStore = useLoadingStore();
 
 const note = ref('');
-const subscribeEmail = ref('');
 
 const getLevelIcon = (level: number): string => {
     switch (level) {

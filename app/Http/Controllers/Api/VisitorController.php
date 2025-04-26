@@ -44,7 +44,7 @@ class VisitorController extends Controller
                  * website - if the param is website
                  */
                 $visits[] = [
-                    'created_at' => now()->format('Y-m-d H:i:s'),
+                    'created_at' => now()->toIso8601String(),
                     'type' => $request->input('utm_source', 'qr'),
                 ];
                 $visitor->visits = $visits;
@@ -175,7 +175,7 @@ class VisitorController extends Controller
             $visitor->collected_data = $data;
             $visitor->visits = [
                 [
-                    'created_at' => now()->format('Y-m-d H:i:s'),
+                    'created_at' => now()->toIso8601String(),
                     'type' => $request->input('utm_source'),
                 ]
             ];

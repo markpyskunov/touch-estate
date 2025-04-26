@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $id
  * @property string $location_id
  * @property int $level
+ * @property RoomType $type
  * @property string $name
  * @property int $area_sqft
  * @property string $width_ft

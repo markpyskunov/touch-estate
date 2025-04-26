@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {LocationNote, Property, VisitSource} from "@/contracts/properties";
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const VISITOR_ID_KEY = 'vid'
 
@@ -19,7 +20,7 @@ export const useVisitStore = defineStore('visit', () => {
     const visitSource = ref<VisitSource>('website');
 
   if (!vid.value) {
-    vid.value = crypto.randomUUID()
+    vid.value = uuidv4();
     localStorage.setItem(VISITOR_ID_KEY, vid.value)
   }
 
@@ -33,7 +34,7 @@ export const useVisitStore = defineStore('visit', () => {
   async function fetchPropertyUsingSidAndAccessCode(propertyId: string, sid: string, accessCode: string) {
     try {
       loading.value = true;
-      error.value = null;
+      error.value = undefined;
       const { data } = await axios.get<Property>(`/api/v1/visitors/properties/${vid.value}/${propertyId}`, {
         params: {
             sid,
@@ -54,7 +55,7 @@ export const useVisitStore = defineStore('visit', () => {
     async function fetchPropertyUsingVID(propertyId: string) {
         try {
             loading.value = true;
-            error.value = null;
+            error.value = undefined;
             const { data } = await axios.get<Property>(`/api/v1/visitors/properties/${vid.value}/${propertyId}`, {
                 params: {
                     utm_source: visitSource.value,
@@ -74,7 +75,7 @@ export const useVisitStore = defineStore('visit', () => {
     async function checkVerificationStatus(propertyId: string, force: boolean = false) {
         try {
             loading.value = true;
-            error.value = null;
+            error.value = undefined;
 
             if (!property.value) {
                 throw new Error('Property must be fetched first');
@@ -97,7 +98,7 @@ export const useVisitStore = defineStore('visit', () => {
   async function sendVerificationCode(data: Record<string, string>) {
     try {
         loading.value = true;
-        error.value = null;
+        error.value = undefined;
         collectedData.value = data;
 
         if (!property.value) {
@@ -119,7 +120,7 @@ export const useVisitStore = defineStore('visit', () => {
   async function verifyCode(code: string) {
     try {
         loading.value = true;
-        error.value = null;
+        error.value = undefined;
 
         if (!property.value) {
             throw new Error('Property must be fetched first');
@@ -144,7 +145,7 @@ export const useVisitStore = defineStore('visit', () => {
     async function toggleFavorite() {
         try {
             loading.value = true;
-            error.value = null;
+            error.value = undefined;
 
             if (!property.value) {
                 throw new Error('Property must be fetched first');
@@ -165,7 +166,7 @@ export const useVisitStore = defineStore('visit', () => {
     async function toggleSubscribe() {
         try {
             loading.value = true;
-            error.value = null;
+            error.value = undefined;
 
             if (!property.value) {
                 throw new Error('Property must be fetched first');
@@ -185,7 +186,7 @@ export const useVisitStore = defineStore('visit', () => {
     async function storeNote(note: string) {
         try {
             loading.value = true;
-            error.value = null;
+            error.value = undefined;
 
             if (!property.value) {
                 throw new Error('Property must be fetched first');
@@ -203,10 +204,6 @@ export const useVisitStore = defineStore('visit', () => {
         } finally {
             loading.value = false;
         }
-    }
-
-    const subscribeToProperty = () => {
-        console.log('Subscription submitted')
     }
 
   return {

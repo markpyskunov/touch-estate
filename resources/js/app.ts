@@ -13,4 +13,4 @@ app.use(vuetify)
 app.use(i18n)
 app.use(pinia)
 
-app.mount('#app') 
+app.mount('#app')
