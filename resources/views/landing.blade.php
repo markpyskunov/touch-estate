@@ -60,7 +60,7 @@
         },
         "offers": {
             "@type": "Offer",
-            "price": "475",
+            "price": "249",
             "priceCurrency": "CAD",
             "availability": "https://schema.org/InStock"
         }
@@ -423,7 +423,7 @@
                 </span>
                 <h2 class="text-4xl font-bold mb-6">Everything You Need to Succeed</h2>
                 <p class="text-xl text-gray-600">
-                    Our comprehensive suite of tools helps you collect, analyze, and act on visitor data with ease.
+                    Our comprehensive suite of tools helps you collect, analyze, <br>and act on visitor data with ease.
                 </p>
             </div>
 
@@ -816,7 +816,7 @@
                 </span>
                 <h2 class="text-4xl font-bold mb-6">Flat Plan Pricing</h2>
                 <p class="text-xl text-gray-600">
-                    Start with our basic package and scale as you grow.
+                    Start with our Pro Package and scale as you grow.
                 </p>
             </div>
 
@@ -824,9 +824,9 @@
                 <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <div class="text-center w-full md:w-auto">
-                            <h3 class="text-2xl font-bold mb-2">Basic Package</h3>
+                            <h3 class="text-2xl font-bold mb-2">Flat rate</h3>
                             <div class="flex items-baseline justify-center gap-2">
-                                <span class="text-4xl font-bold">$475</span>
+                                <span class="text-4xl font-bold">$249</span>
                                 <span class="text-gray-500">/month</span>
                             </div>
                         </div>
@@ -836,7 +836,7 @@
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>24 Smart QR/NFC Property Tags</span>
+                                    <span>12 Smart QR/NFC Property Tags</span>
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -872,7 +872,9 @@
                     </div>
                 </div>
                 <div class="mt-8 text-center text-gray-600">
-                    <p>Need more tags? Additional 12 tags for just $200/month</p>
+                    <p>Need more tags? Every next additional 12 tags for just $199/month</p>
+                    <p>You can select between free printable property title page with a QR code</p>
+                    <p>Or order the NFC/QR tags with your branding from us for $25/tag. Conditions apply</p>
                     <p class="text-sm mt-2">* All prices are in CAD</p>
                 </div>
             </div>
@@ -967,6 +969,10 @@
                 <h2 class="text-4xl font-bold mb-6">Start Your Journey Today</h2>
                 <p class="text-xl text-gray-600">
                     Fill out the form below and we'll get back to you within 24 hours.
+                </p>
+
+                <p class="text-xl text-gray-600">
+                    <b>Get a demo access today after 15 minutes call with us!</b>
                 </p>
             </div>
 
