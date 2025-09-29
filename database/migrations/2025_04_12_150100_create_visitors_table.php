@@ -10,21 +10,13 @@ return new class extends Migration
     {
         Schema::create('visitors', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('location_id')->constrained()->restrictOnDelete()->restrictOnUpdate();
-            $table->uuid('vid');
-            $table->json('collected_data');
-            $table->json('visits');
+            $table->dateTime('last_seen_at')->nullable()->index();
+            $table->unsignedInteger('visits')->default(0);
+            $table->jsonb('profile')->nullable();
             $table->timestamps();
-            $table->softDeletes();
-
-            $table->index(['location_id', 'vid', 'created_at']);
-            $table->unique(['location_id', 'vid']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         throw new Exception('Down method is not allowed for this project');

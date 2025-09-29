@@ -4,69 +4,50 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasUUID;
 use Illuminate\Support\Collection;
 
 /**
- * @property string $id
- * @property string $location_id
- * @property string $vid UUID from the Frontend
- * @property array $collected_data
- * @property array $visits
+ * @property string $id UUID from the HTTP Cookie that FE assigns
+ * @property \Illuminate\Support\Carbon $last_seen_at
+ * @property int $visits
+ * @property null|array $profile
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- *
- * @property-read \App\Models\Location $location
- * @property-read \App\Models\Campaign $campaign
  * @property-read Collection<LocationNote> $locationNotes
- * @property-read Collection<Location> $favoriteLocations
- * @property-read Collection<Location> $subscribedToLocations
+ * @property-read Collection<VisitorActivity> $visitorActivities
+ * @property-read Collection<VisitorActivityAggregation> $visitorActivityAggregations
  */
 class Visitor extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use HasUUID;
 
     protected $fillable = [
-        'location_id',
-        'vid',
-        'collected_data',
+        'id',
+        'last_seen_at',
         'visits',
+        'profile',
     ];
 
     protected $casts = [
-        'collected_data' => 'json',
-        'visits' => 'json',
+        'last_seen_at' => 'datetime',
+        'profile' => 'json',
     ];
-
-    public function location(): BelongsTo
-    {
-        return $this->belongsTo(Location::class);
-    }
-
-    public function campaign(): BelongsTo
-    {
-        return $this->belongsTo(Campaign::class);
-    }
 
     public function locationNotes(): HasMany
     {
         return $this->hasMany(LocationNote::class);
     }
 
-    public function favoriteLocations(): BelongsToMany
+    public function visitorActivities(): HasMany
     {
-        return $this->belongsToMany(Location::class, 'visitors_favorite_locations');
+        return $this->hasMany(VisitorActivity::class);
     }
 
-    public function subscribedToLocations(): BelongsToMany
+    public function visitorActivityAggregations(): HasMany
     {
-        return $this->belongsToMany(Location::class, 'visitors_subscribed_to_locations');
+        return $this->hasMany(VisitorActivityAggregation::class);
     }
 }

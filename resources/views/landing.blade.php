@@ -48,25 +48,6 @@
     }
     </script>
 
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": "Touch Estate Analytics Platform",
-        "description": "Real estate analytics and visitor tracking system using NFC/QR technology",
-        "brand": {
-            "@type": "Brand",
-            "name": "Touch Estate"
-        },
-        "offers": {
-            "@type": "Offer",
-            "price": "249",
-            "priceCurrency": "CAD",
-            "availability": "https://schema.org/InStock"
-        }
-    }
-    </script>
-
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Add Toastify CSS and JS -->
@@ -75,6 +56,9 @@
     <style>
         html {
             scroll-behavior: smooth;
+        }
+        .dot > div {
+            margin-left: -6px;
         }
         .gradient-bg {
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
@@ -291,12 +275,12 @@
                             <p class="text-blue-200">Active Properties</p>
                         </div>
                         <div>
-                            <h4 class="text-3xl font-bold">98%</h4>
-                            <p class="text-blue-200">Client Satisfaction</p>
+                            <h4 class="text-3xl font-bold">100%</h4>
+                            <p class="text-blue-200">Ease of use</p>
                         </div>
                         <div>
-                            <h4 class="text-3xl font-bold">24/7</h4>
-                            <p class="text-blue-200">Support</p>
+                            <h4 class="text-3xl font-bold">95%</h4>
+                            <p class="text-blue-200">Client satisfaction</p>
                         </div>
                     </div>
                 </div>
@@ -338,7 +322,7 @@
                 </span>
                 <h2 class="text-4xl font-bold mb-6">What is an NFC/QR Tag?</h2>
                 <p class="text-xl text-gray-600">
-                    Our custom-designed tags combine physical durability with digital intelligence.
+                    QR tags are as simple as print and use. NFC tag is as simple as glue the chip!
                 </p>
             </div>
 
@@ -362,7 +346,7 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold mb-2">Custom Crafted</h3>
-                            <p class="text-gray-600">Each tag is carefully designed and manufactured by our team, ensuring the highest quality and durability for your real estate needs.</p>
+                            <p class="text-gray-600">Each tag is unique and prepared to serve your business using your designs.</p>
                         </div>
                     </div>
 
@@ -373,8 +357,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-2">Document Holder</h3>
-                            <p class="text-gray-600">The tag includes a sturdy stand that securely holds your property documents, making it easy for visitors to access important information.</p>
+                            <h3 class="text-xl font-semibold mb-2">DIY placement</h3>
+                            <p class="text-gray-600">You decide where to use it. Your sign, or open house, or flyer</p>
                         </div>
                     </div>
 
@@ -398,8 +382,34 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-2">Unique Identification</h3>
-                            <p class="text-gray-600">Every tag has a unique identifier that our application uses to track its location and usage, providing you with precise analytics for each property.</p>
+                            <h3 class="text-xl font-semibold mb-2">Lead contacts capturing</h3>
+                            <p class="text-gray-600">To see the property your guests will have to login using email/sms code. So that you will get their contacts right away</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Analytics</h3>
+                            <p class="text-gray-600">See when, where, and who is using it in a real time</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Communications follow up</h3>
+                            <p class="text-gray-600">Collect visitor's feedback right after their visit with the automated follow up campaigns</p>
                         </div>
                     </div>
                 </div>
@@ -564,12 +574,16 @@
                 <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                         <div>
-                            <h3 class="text-xl font-semibold text-gray-800">Favorites Activity</h3>
+                            <h3 class="text-xl font-semibold text-gray-800">Likes history</h3>
                             <p class="text-sm text-gray-500">Last 7 days</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span class="text-sm font-medium text-gray-600">Favorites Added</span>
+                            <span class="text-sm font-medium text-gray-600">Likes added</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span class="text-sm font-medium text-gray-600">Likes removed</span>
                         </div>
                     </div>
                     <div class="w-full relative" style="min-height: 200px; max-height: 300px;">
@@ -606,7 +620,7 @@
                 <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-blue-400 to-blue-300 transform -translate-x-1/2 hidden md:block animate-pulse" style="height: calc(100% - 160px);"></div>
 
                 <!-- Step 1 -->
-                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-1">
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-1 dot">
                     <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="w-full md:w-1/2 md:pr-12 md:text-right">
@@ -635,7 +649,7 @@
                 </div>
 
                 <!-- Step 2 -->
-                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-2">
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-2 dot">
                     <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="hidden md:block md:w-1/2 md:pr-12">
@@ -664,7 +678,7 @@
                 </div>
 
                 <!-- Step 3 -->
-                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-3">
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-3 dot">
                     <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="w-full md:w-1/2 md:pr-12 md:text-right">
@@ -693,7 +707,7 @@
                 </div>
 
                 <!-- Step 4 -->
-                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-4">
+                <div class="relative mb-8 md:mb-16 group fade-in stagger-delay-4 dot">
                     <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-lg group-hover:scale-125 transition-transform duration-300 hidden md:block animate-bounce"></div>
                     <div class="flex items-center">
                         <div class="hidden md:block md:w-1/2 md:pr-12">
@@ -816,7 +830,7 @@
                 </span>
                 <h2 class="text-4xl font-bold mb-6">Flat Plan Pricing</h2>
                 <p class="text-xl text-gray-600">
-                    Start with our Pro Package and scale as you grow.
+                    No need to select between plans and limitations!
                 </p>
             </div>
 
@@ -824,10 +838,10 @@
                 <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                         <div class="text-center w-full md:w-auto">
-                            <h3 class="text-2xl font-bold mb-2">Flat rate</h3>
-                            <div class="flex items-baseline justify-center gap-2">
-                                <span class="text-4xl font-bold">$249</span>
-                                <span class="text-gray-500">/month</span>
+                            <h3 class="text-2xl text-left font-bold mb-2">Flat rate</h3>
+                            <div class="flex flex-col items-baseline justify-center gap-2">
+                                <span class="text-4xl font-bold">$9.99</span>
+                                <span class="text-gray-500">per tag per month</span>
                             </div>
                         </div>
                         <div class="flex-1 flex justify-center">
@@ -836,7 +850,7 @@
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>12 Smart QR/NFC Property Tags</span>
+                                    <span><b>One tag is always free</b></span>
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -872,10 +886,7 @@
                     </div>
                 </div>
                 <div class="mt-8 text-center text-gray-600">
-                    <p>Need more tags? Every next additional 12 tags for just $199/month</p>
-                    <p>You can select between free printable property title page with a QR code</p>
-                    <p>Or order the NFC/QR tags with your branding from us for $25/tag. Conditions apply</p>
-                    <p class="text-sm mt-2">* All prices are in CAD</p>
+                    <p class="text-sm mt-2">* All prices are in CAD. Taxes will be added to the final price</p>
                 </div>
             </div>
         </div>
@@ -1076,12 +1087,20 @@
             type: 'bar',
             data: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Favorites',
-                    data: [12, 15, 10, 18, 14, 20, 16],
-                    backgroundColor: '#10B981',
-                    borderRadius: 4
-                }]
+                datasets: [
+                    {
+                        label: 'Likes added',
+                        data: [12, 15, 10, 18, 14, 20, 16],
+                        backgroundColor: '#10B981',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Likes removed',
+                        data: [3, 2, 0, 0, 1, 5, 4],
+                        backgroundColor: '#F44336',
+                        borderRadius: 4
+                    }
+                ]
             },
             options: chartConfig
         });

@@ -6,6 +6,7 @@ enum Role: string
 {
     case SUPERADMIN = 'superadmin';
     case ADMIN = 'admin';
+    case MANAGER = 'manager';
     case REALTOR = 'realtor';
 
     /**
@@ -16,6 +17,7 @@ enum Role: string
         return [
             self::SUPERADMIN,
             self::ADMIN,
+            self::MANAGER,
             self::REALTOR,
         ];
     }

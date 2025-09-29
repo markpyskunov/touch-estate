@@ -17,9 +17,7 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             UserSeeder::class,
             LocationSeeder::class,
-            NfcQrTagSeeder::class,
             VisitorSeeder::class,
-            CampaignSeeder::class,
         ]);
     }
 }

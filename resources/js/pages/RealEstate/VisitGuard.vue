@@ -156,6 +156,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {useVisitStore} from '@/stores/visit'
 import {useLoadingStore} from "@/stores/loading";
+import {VisitSource} from "@/contracts/properties";
 
 const route = useRoute()
 const router = useRouter()
@@ -164,7 +165,7 @@ const loadingStore = useLoadingStore()
 
 // Get campaign and property IDs from URL
 const propertyId = route.query['property'] as string
-let visitSource = (route.query['utm_source'] || 'qr') as string
+let visitSource = (route.query['utm_source'] || 'qr') as VisitSource
 const force = !!route.query['force']
 
 if (!['qr', 'nfc', 'website'].includes(visitSource)) {

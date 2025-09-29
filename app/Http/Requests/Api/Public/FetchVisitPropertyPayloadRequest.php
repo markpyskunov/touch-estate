@@ -3,21 +3,19 @@
 namespace App\Http\Requests\Api\Public;
 
 use App\Models\Location;
-use App\Models\Visitor;
+use App\Services\VisitorService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Cache;
 
 class FetchVisitPropertyPayloadRequest extends FormRequest
 {
+    private VisitorService $visitorService;
     private Location $property;
 
     public function authorize(): bool
     {
-        if ($vid = $this->route('vid')) {
-            $exists = Visitor::query()
-                ->where('vid', $vid)
-                ->where('location_id', $this->getProperty()->id)
-                ->exists();
+        if ($vid = $this->getVisitService()->extractVidFromRequest($this)) {
+            $exists = $this->getVisitService()->alreadyVisitedLocation($vid, $this->getProperty()->id);
 
             if ($exists) {
                 return true;
@@ -52,5 +50,14 @@ class FetchVisitPropertyPayloadRequest extends FormRequest
         }
 
         return $this->property;
+    }
+
+    public function getVisitService(): VisitorService
+    {
+        if (!isset($this->visitorService)) {
+            $this->visitorService = app(VisitorService::class);
+        }
+
+        return $this->visitorService;
     }
 }

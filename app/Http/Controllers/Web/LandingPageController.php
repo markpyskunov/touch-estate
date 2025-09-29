@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\NfcQrTag;
+use App\Services\VisitorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,9 +14,23 @@ use Spatie\RouteAttributes\Attributes\Get;
 
 class LandingPageController extends Controller
 {
+    public function __construct(
+        private readonly VisitorService $visitorService,
+    )
+    {
+    }
+
+    // Local example /lp/ABCD0?force=1
     #[Get('lp/{code}')]
     public function realEstateLandingPage(Request $request): JsonResponse|RedirectResponse
     {
+        $visitorId = $this->visitorService->extractVidFromRequest($request);
+        $hadCookieFromBeginning = !!$visitorId;
+        if (!$hadCookieFromBeginning) {
+            $visitorId = Str::uuid()->toString();
+        }
+
+        $this->visitorService->getOrCreateVisitorById($visitorId);
         $tagCode = $request->route('code');
         $companyCode = Str::substr($tagCode, 0, 4);
         $index = (int) Str::substr($tagCode, 4, 4);
@@ -27,26 +42,21 @@ class LandingPageController extends Controller
 
         // No tag / No attached location / No attached campaign is OK to lead to error
         if (!$tag) {
-            return response()->json('Not found tag', 404);
+            return response()->json(['message' => 'Not found tag'], 404);
         }
 
         $locationId = $tag->location?->id;
         $campaignId = $tag->location->campaign?->id;
 
         if (!$locationId) {
-            return response()->json('Not found property', 404);
+            return response()->json(['message' => 'Not found property'], 404);
         }
 
         if (!$campaignId) {
-            return response()->json('Not found campaign', 404);
+            return response()->json(['message' => 'Not found campaign'], 404);
         }
 
-        $sid = Str::uuid()->toString();
-        $accessCode = Str::uuid()->toString();
-
-        Cache::put("visitor_session.{$sid}", [
-            'access_code' => $accessCode,
-        ], ttl: now()->addMinutes(30));
+        [$sid, $accessCode] = $this->visitorService->initVisitorSession();
 
         $params = [
             'property' => $locationId,
@@ -58,8 +68,26 @@ class LandingPageController extends Controller
         if (!$params['force']) {
             unset($params['force']);
         }
-        return redirect(
-            config('app.url') . '/real-estate/visit?' . http_build_query($params),
+        $response = response()->redirectTo(
+            '/real-estate/visit?' . http_build_query($params),
         );
+
+        if (!$hadCookieFromBeginning) {
+            $response = $response->withCookie(
+                cookie(
+                    'vid',
+                    $visitorId,
+                    525600,
+                    '/',
+                    null,
+                    $request->isSecure(),
+                    true,
+                    false,
+                    'Lax'
+                )
+            );
+        }
+
+        return $response;
     }
 }

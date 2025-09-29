@@ -10,11 +10,17 @@ return new class extends Migration
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('location_id')->nullable()->constrained()->restrictOnDelete()->restrictOnUpdate();
             $table->string('name', 255);
             $table->json('payload');
             $table->timestamps();
-            $table->softDeletes();
+        });
+
+        Schema::table('locations', function (Blueprint $table) {
+            $table->foreign('campaign_id')
+                ->references('id')
+                ->on('campaigns')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
         });
     }
 

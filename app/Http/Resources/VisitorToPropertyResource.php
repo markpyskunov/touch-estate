@@ -2,23 +2,28 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\VisitorActivityAggregationType;
+use App\Enums\VisitorActivityType;
 use App\Models\Location;
 use App\Models\LocationPricing;
 use App\Models\Visitor;
+use App\Models\VisitorActivity;
+use App\Models\VisitorActivityAggregation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Property is a concrete form of a Location
  */
-class PropertyResource extends JsonResource
+class VisitorToPropertyResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         /** @var Location $model */
         $model = $this->resource;
 
-        $visitor = Visitor::query()->where('vid', $request->route('vid'))->latest()->first();
+        /** @var Visitor $visitor */
+        $visitor = $this->resource->_visitor;
 
         return [
             'id' => $model->id,
@@ -33,32 +38,13 @@ class PropertyResource extends JsonResource
             'rooms' => LocationRoomResource::collection($model->locationRooms),
             'documents' => LocationDocumentResource::collection($model->locationDocuments),
             'campaign' => CampaignResource::make($model->campaign),
-            'notes' => $this->when(
-                $visitor,
-                fn() => LocationNoteResource::collection(
-                    $model
-                        ->locationNotes()
-                        ->where('visitor_id', $visitor->id)
-                        ->get()
-                ),
-                []
+            'notes' => LocationNoteResource::collection(
+                $model
+                    ->locationNotes()
+                    ->where('visitor_id', $visitor->id)
+                    ->get()
             ),
-            'visits' => $this->when(
-                $visitor,
-                fn() => array_reverse($visitor->visits),
-                []
-            ),
-            'stats' => $model->getStats(),
-            'is_favorite' => $this->when(
-                $visitor,
-                fn() => $visitor->favoriteLocations()->where('location_id', $model->id)->exists(),
-                false
-            ),
-            'is_subscribed' => $this->when(
-                $visitor,
-                fn() => $visitor->subscribedToLocations()->where('location_id', $model->id)->exists(),
-                false
-            ),
+            ...$this->_stats,
             'realtor' => OwnerUserResource::make($model->realtor),
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at,

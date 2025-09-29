@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Enums\RoomType;
 use App\Models\Address;
 use App\Models\Company;
+use App\Models\NfcQrTag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Location;
@@ -309,12 +310,46 @@ class LocationSeeder extends Seeder
             $createdLocation = Location::create([
                 'company_id' => Company::whereName('Your company LTD')->first()->id,
                 'address_id' => Address::wherePlaceId('ChIJN1t_tDeuEmsRUsoyG83frY4')->first()->id,
-                'user_id' => $realtor->id,
+                'realtor_id' => $realtor->id,
+                'campaign_id' => null,
+                'nfc_qr_tag_id' => null,
                 'area_sqft' => 999,
                 'description' => 'Beautiful family home in the desirable Langford area. This spacious property features 4 bedrooms, 3 bathrooms, and a large backyard perfect for entertaining. The home has been recently updated with modern finishes while maintaining its classic charm.',
                 'name' => $location['name'],
                 'mls' => '000000',
             ]);
+
+            $c = $createdLocation->campaign()->create([
+                'name' => "{$createdLocation->name} Campaign",
+                'payload' => [
+                    'fields' => [
+                        [
+                            'id' => 'full_name',
+                            'required' => true,
+                            'type' => 'input[type=text]',
+                            'label' => 'Full Name',
+                            'validation' => [
+                                'min' => 1,
+                                'max' => 128,
+                            ],
+                        ],
+                    ],
+                    'flags' => [
+                        'use_email_login' => true,
+                        'use_sms_login' => true,
+                    ],
+                ]
+            ]);
+            $createdLocation->campaign_id = $c->id;
+            $createdLocation->save();
+
+            /** @var NfcQrTag $tag */
+            $tag = $createdLocation->nfcQrTag()->create([
+                'code' => $createdLocation->company->code,
+                'name' => 'Default tag',
+            ]);
+            $createdLocation->nfc_qr_tag_id = $tag->id;
+            $createdLocation->save();
 
             $images = [
                 '/images/properties/living-room-1.jpg',
