@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FormLead;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -27,7 +28,12 @@ class ContactController extends Controller
 
         try {
             // Store the contact request in the database
-            // You might want to create a Contact model and store the data
+            FormLead::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'company_name' => $request->company,
+                'message' => $request->message,
+            ]);
             
             // Send email notification
             // Mail::to(config('mail.admin_email'))->send(new ContactFormSubmission($request->all()));

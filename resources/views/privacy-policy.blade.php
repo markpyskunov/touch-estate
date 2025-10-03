@@ -43,7 +43,7 @@
 <body class="bg-gray-50">
     <div class="markdown-content bg-white shadow-lg rounded-lg">
         <h1>Privacy Policy</h1>
-        <p>Last updated: {{ date('F d, Y') }}</p>
+        <p>Last updated: 10/02/2025</p>
 
         <h2>1. Introduction</h2>
         <p>Touch Estate ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our real estate analytics and data collection service.</p>
@@ -117,4 +117,4 @@
         </ul>
     </div>
 </body>
-</html> 
+</html>

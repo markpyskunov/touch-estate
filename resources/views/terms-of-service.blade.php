@@ -43,7 +43,7 @@
 <body class="bg-gray-50">
     <div class="markdown-content bg-white shadow-lg rounded-lg">
         <h1>Terms of Service</h1>
-        <p>Last updated: {{ date('F d, Y') }}</p>
+        <p>Last updated: 10/02/2025</p>
 
         <h2>1. Acceptance of Terms</h2>
         <p>By accessing and using Touch Estate's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
@@ -117,4 +117,4 @@
         </ul>
     </div>
 </body>
-</html> 
+</html>

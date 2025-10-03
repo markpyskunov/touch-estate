@@ -269,18 +269,18 @@
                             View Features
                         </a>
                     </div>
-                    <div class="grid grid-cols-3 gap-6 pt-8 border-t border-blue-400 border-opacity-30">
-                        <div>
-                            <h4 class="text-3xl font-bold">500+</h4>
-                            <p class="text-blue-200">Active Properties</p>
-                        </div>
+                    <div class="grid grid-cols-2 gap-6 pt-8 border-t border-blue-400 border-opacity-30">
+{{--                        <div>--}}
+{{--                            <h4 class="text-3xl font-bold">0</h4>--}}
+{{--                            <p class="text-blue-200">Active Properties</p>--}}
+{{--                        </div>--}}
                         <div>
                             <h4 class="text-3xl font-bold">100%</h4>
                             <p class="text-blue-200">Ease of use</p>
                         </div>
                         <div>
-                            <h4 class="text-3xl font-bold">95%</h4>
-                            <p class="text-blue-200">Client satisfaction</p>
+                            <h4 class="text-3xl font-bold">Launch Ready</h4>
+                            <p class="text-blue-200">Beta testing phase</p>
                         </div>
                     </div>
                 </div>
@@ -840,7 +840,7 @@
                         <div class="text-center w-full md:w-auto">
                             <h3 class="text-2xl text-left font-bold mb-2">Flat rate</h3>
                             <div class="flex flex-col items-baseline justify-center gap-2">
-                                <span class="text-4xl font-bold">$9.99</span>
+                                <span class="text-4xl font-bold">$5.99</span>
                                 <span class="text-gray-500">per tag per month</span>
                             </div>
                         </div>
@@ -868,7 +868,7 @@
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    <span>Visitor subscription capture + lead export</span>
+                                    <span>Leads capturing + even detecting hot leads</span>
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -938,8 +938,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-xl font-semibold mb-2">What if I need more than 24 tags?</h3>
-                                <p class="text-gray-600">Extra packs are available. You can easily add additional sets of 12 tags to your subscription as your portfolio grows.</p>
+                                <h3 class="text-xl font-semibold mb-2">How many tags can I have?</h3>
+                                <p class="text-gray-600">With our subscription plans there is no limit on how many tags you will be able to manage. As many as you will need right today!</p>
                             </div>
                         </div>
                     </div>
@@ -982,9 +982,9 @@
                     Fill out the form below and we'll get back to you within 24 hours.
                 </p>
 
-                <p class="text-xl text-gray-600">
-                    <b>Get a demo access today after 15 minutes call with us!</b>
-                </p>
+{{--                <p class="text-xl text-gray-600">--}}
+{{--                    <b>Get a demo access today after 15 minutes call with us!</b>--}}
+{{--                </p>--}}
             </div>
 
             <div class="max-w-2xl mx-auto">
