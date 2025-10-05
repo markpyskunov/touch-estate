@@ -840,7 +840,7 @@
                         <div class="text-center w-full md:w-auto">
                             <h3 class="text-2xl text-left font-bold mb-2">Flat rate</h3>
                             <div class="flex flex-col items-baseline justify-center gap-2">
-                                <span class="text-4xl font-bold">$5.99</span>
+                                <span class="text-4xl font-bold">$2.99</span>
                                 <span class="text-gray-500">per tag per month</span>
                             </div>
                         </div>
